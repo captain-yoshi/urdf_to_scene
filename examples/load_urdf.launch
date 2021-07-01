@@ -1,0 +1,12 @@
+<launch>
+
+  <!-- By default, we are not in debug mode -->
+  <arg name="launch_prefix" default=""/>
+
+  <!-- Load xacro scene -->
+  <param name="scene_urdf" command="$(find xacro)/xacro '$(find scene_parser)/config/scene.urdf.xacro'"/>
+
+  <!-- Launch node -->
+  <node name="load_urdf" pkg="scene_parser" type="load_urdf" output="screen" required="true" launch-prefix="$(arg launch_prefix)"/>
+
+</launch>

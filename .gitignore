@@ -1,0 +1,7 @@
+# Compile Commands
+*compile_commands.json
+
+# Code completion
+*.ccls-root
+*.ccls-cache
+

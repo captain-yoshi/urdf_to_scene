@@ -1,0 +1,62 @@
+<?xml version="1.0" ?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="panda">
+  <!-- Utility macros for collision objects -->
+
+  <xacro:macro name="add_joint" params="name frame_id *origin">
+    <joint name="${name}" type="fixed">
+      <xacro:insert_block name="origin" />
+      <parent link="${frame_id}" />
+      <child link="${name}" />
+      <axis xyz="0 0 1" />
+    </joint>
+  </xacro:macro>
+
+  <xacro:macro name="add_link" params="name frame_id *geometry">
+    <link name="${name}">
+      <collision>
+        <geometry>
+          <xacro:insert_block name="geometry" />
+        </geometry>
+      </collision>
+    </link>
+  </xacro:macro>
+
+  <xacro:macro name="dummy" params="name frame_id xyz:='0 0 0' rpy:='0 0 0'">
+    <link name="${name}"/>
+    
+    <xacro:add_joint name="${name}" frame_id="${frame_id}">
+      <origin xyz="${xyz}" rpy="${rpy}"/>
+    </xacro:add_joint>>
+  </xacro:macro>
+
+  <xacro:macro name="mesh" params="name frame_id resource xyz:='0 0 0' rpy:='0 0 0' scale:='1.0 1.0 1.0'">
+    <xacro:add_link name="${name}" frame_id="${frame_id}">
+        <mesh filename="${resource}" scale="${scale}" />
+    </xacro:add_link> 
+    
+    <xacro:add_joint name="${name}" frame_id="${frame_id}">
+      <origin xyz="${xyz}" rpy="${rpy}"/>
+    </xacro:add_joint>
+
+  </xacro:macro>
+
+
+  <xacro:macro name="box" params="name frame_id dimensions xyz:='0 0 0' rpy:='0 0 0'">
+    <xacro:add_link name="${name}" frame_id="${frame_id}">
+          <box size="${dimensions}" />
+    </xacro:add_link> 
+    <xacro:add_joint name="${name}" frame_id="${frame_id}">
+      <origin xyz="${xyz}" rpy="${rpy}"/>
+    </xacro:add_joint>
+  </xacro:macro>
+
+
+  <xacro:macro name="subframe" params="name subframe dl:=/ xyz:='0 0 0' rpy:='0 0 0'">
+    <link name="${name}${dl}${subframe}"/>
+    
+    <xacro:add_joint name="${name}${dl}${subframe}" frame_id="${name}">
+      <origin xyz="${xyz}" rpy="${rpy}"/>
+    </xacro:add_joint>
+  </xacro:macro>
+
+</robot>

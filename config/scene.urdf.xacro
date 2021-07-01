@@ -1,0 +1,25 @@
+<?xml version="1.0" ?>
+<robot name="scene" xmlns:xacro="http://www.ros.org/wiki/xacro">
+  <xacro:include filename="$(find scene_parser)/config/utils.xacro" />
+  <xacro:include filename="$(find scene_parser)/config/shelf.urdf.xacro" />
+
+  <link name="world" />
+
+  <!-- Create default shelf -->
+  <xacro:shelf name="book-shelf"
+               frame_id="world"
+               xyz="0.8 0 0"/>
+
+  <!-- Add cube on book-shelf level-1 -->
+  <xacro:box name="box"
+             frame_id="book-shelf/level-1"
+             xyz="0 0 0.005"
+             dimensions="0.03 0.03 0.03"/>
+
+  <!-- Add can on book-shelf level-2 -->
+  <xacro:mesh name="can"
+              frame_id="book-shelf/level-2"
+              scale="0.01 0.01 0.01"
+              resource="package://scene_parser/mesh/can.stl"/>
+
+</robot>
