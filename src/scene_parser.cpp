@@ -36,7 +36,7 @@
    Desc:
 */
 
-#include "../include/scene_parser.h"
+#include <scene_parser/scene_parser.h>
 
 #include <geometric_shapes/mesh_operations.h>
 #include <geometric_shapes/shape_operations.h>

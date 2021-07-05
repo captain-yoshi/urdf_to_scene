@@ -38,8 +38,9 @@
 
 #include <ros/ros.h>
 
-#include "../include/scene_parser.h"
 #include <moveit/planning_scene_interface/planning_scene_interface.h>
+
+#include <scene_parser/scene_parser.h>
 
 int main(int argc, char** argv) {
 	ros::init(argc, argv, "scene_parser");
