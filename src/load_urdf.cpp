@@ -47,12 +47,20 @@ int main(int argc, char** argv) {
 	ros::AsyncSpinner spinner(1);
 	spinner.start();
 
-	ros::NodeHandle nh(ros::this_node::getName());
+	ros::NodeHandle nh("~");
 
-	// Remove all objects
+	// Remove all scene objects
 	moveit::planning_interface::PlanningSceneInterface psi;
-	std::vector<std::string> object_names = psi.getKnownObjectNames();
-	psi.removeCollisionObjects(object_names);
+	{
+		moveit_msgs::PlanningScene rm;
+		rm.is_diff = true;
+		rm.robot_state.is_diff = true;
+		rm.robot_state.attached_collision_objects.resize(1);
+		rm.robot_state.attached_collision_objects[0].object.operation = moveit_msgs::CollisionObject::REMOVE;
+		rm.world.collision_objects.resize(1);
+		rm.world.collision_objects[0].operation = moveit_msgs::CollisionObject::REMOVE;
+		psi.applyPlanningScene(rm);
+	}
 
 	// Parse URDF into a planning scene
 	SceneParser parser;
