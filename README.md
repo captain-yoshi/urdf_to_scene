@@ -11,3 +11,12 @@ Load collision objects from a URDF to a planning scene.
 
 roslaunch scene_parser load_urdf.launch
 ```
+
+Create diagram of URDF
+```shell
+# Create urdf
+rosrun xacro xacro scene.urdf.xacro > scene.urdf
+
+# Create graph
+urdf_to_graphiz scene.urdf
+```

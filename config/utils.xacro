@@ -1,8 +1,9 @@
 <?xml version="1.0" ?>
 <robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="panda">
-  <!-- Utility macros for collision objects -->
+  <!-- Utility macros for creating collision objects as URDF -->
 
-  <xacro:macro name="add_joint" params="name frame_id *origin">
+  <!-- Store tf information as a joint for the collision object -->
+  <xacro:macro name="object_joint_" params="name frame_id *origin">
     <joint name="${name}" type="fixed">
       <xacro:insert_block name="origin" />
       <parent link="${frame_id}" />
@@ -11,7 +12,8 @@
     </joint>
   </xacro:macro>
 
-  <xacro:macro name="add_link" params="name frame_id *geometry">
+  <!-- Store collision type as a link for the collision object -->
+  <xacro:macro name="object_link_" params="name frame_id *geometry">
     <link name="${name}">
       <collision>
         <geometry>
@@ -21,42 +23,52 @@
     </link>
   </xacro:macro>
 
+  <!-- Add dummy link with no collision -->
   <xacro:macro name="dummy" params="name frame_id xyz:='0 0 0' rpy:='0 0 0'">
     <link name="${name}"/>
     
-    <xacro:add_joint name="${name}" frame_id="${frame_id}">
+    <xacro:object_joint_ name="${name}" frame_id="${frame_id}">
       <origin xyz="${xyz}" rpy="${rpy}"/>
-    </xacro:add_joint>>
+    </xacro:object_joint_>>
   </xacro:macro>
 
+  <!-- Add mesh -->
   <xacro:macro name="mesh" params="name frame_id resource xyz:='0 0 0' rpy:='0 0 0' scale:='1.0 1.0 1.0'">
-    <xacro:add_link name="${name}" frame_id="${frame_id}">
+    <xacro:object_link_ name="${name}" frame_id="${frame_id}">
         <mesh filename="${resource}" scale="${scale}" />
-    </xacro:add_link> 
+    </xacro:object_link_> 
     
-    <xacro:add_joint name="${name}" frame_id="${frame_id}">
+    <xacro:object_joint_ name="${name}" frame_id="${frame_id}">
       <origin xyz="${xyz}" rpy="${rpy}"/>
-    </xacro:add_joint>
-
+    </xacro:object_joint_>
   </xacro:macro>
 
-
+  <!-- Add primitive box -->
   <xacro:macro name="box" params="name frame_id dimensions xyz:='0 0 0' rpy:='0 0 0'">
-    <xacro:add_link name="${name}" frame_id="${frame_id}">
+    <xacro:object_link_ name="${name}" frame_id="${frame_id}">
           <box size="${dimensions}" />
-    </xacro:add_link> 
-    <xacro:add_joint name="${name}" frame_id="${frame_id}">
+    </xacro:object_link_> 
+    <xacro:object_joint_ name="${name}" frame_id="${frame_id}">
       <origin xyz="${xyz}" rpy="${rpy}"/>
-    </xacro:add_joint>
+    </xacro:object_joint_>
   </xacro:macro>
 
 
-  <xacro:macro name="subframe" params="name subframe dl:=/ xyz:='0 0 0' rpy:='0 0 0'">
+  <!-- Add subframe -->
+  <!-- Optional: frame_id defaults to name parameter if empty -->
+  <xacro:macro name="subframe" params="name subframe frame_id:='' dl:=/ xyz:='0 0 0' rpy:='0 0 0'">
     <link name="${name}${dl}${subframe}"/>
-    
-    <xacro:add_joint name="${name}${dl}${subframe}" frame_id="${name}">
-      <origin xyz="${xyz}" rpy="${rpy}"/>
-    </xacro:add_joint>
+
+    <xacro:if value="${len(frame_id) > 0}">
+      <xacro:object_joint_ name="${name}${dl}${subframe}" frame_id="${frame_id}">
+        <origin xyz="${xyz}" rpy="${rpy}"/>
+      </xacro:object_joint_>
+    </xacro:if>
+    <xacro:unless value="${len(frame_id) > 0}">
+      <xacro:object_joint_ name="${name}${dl}${subframe}" frame_id="${name}">
+        <origin xyz="${xyz}" rpy="${rpy}"/>
+      </xacro:object_joint_>
+    </xacro:unless>
   </xacro:macro>
 
 </robot>

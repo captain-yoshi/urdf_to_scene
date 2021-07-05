@@ -1,86 +1,83 @@
 <?xml version="1.0" ?>
 <robot name="shelf" xmlns:xacro="http://www.ros.org/wiki/xacro">
-
   <xacro:include filename="$(find scene_parser)/config/utils.xacro" />
 
-
+  <!-- Generic Open Shelf macro -->
+  <!-- TODO add option for an open and a closed shelf -->
   <xacro:macro name="shelf" params="name
                                     frame_id
                                     xyz:='0 0 0'
                                     rpy:='0 0 0'
-                                    shelf_number:=5
-                                    shelf_dim_x:=0.6
-                                    shelf_dim_y:=1.5
-                                    shelf_dim_z:=0.02
+                                    board_number:=5
+                                    board_dim_x:=0.6
+                                    board_dim_y:=1.5
+                                    board_dim_z:=0.02
                                     post_dim_x:=0.035
                                     post_dim_y:=0.035
-                                    post_dim_z:=1.25">
-
+                                    post_dim_z:=1.25
+                                    dl:=_">
 
   <!-- Property -->
-  <xacro:property name="base_link" value="${name}" />
-  <xacro:property name="dl" value="_" />
-
-  <xacro:property name="shelf_dimensions" value="${shelf_dim_x} ${shelf_dim_y} ${shelf_dim_z}" />
-
+  <xacro:property name="root" value="${name}" />
+  <xacro:property name="board_dimensions" value="${board_dim_x} ${board_dim_y} ${board_dim_z}" />
   <xacro:property name="post_dimensions" value="${post_dim_x} ${post_dim_y} ${post_dim_z}" />
+  <xacro:property name="board_gap" value="${post_dim_z/(board_number)}" />
 
-  <xacro:property name="shelf_gap" value="${post_dim_z/(shelf_number)}" />
-
-  <!-- Subframes wrt. base_link -->
+  <!-- Subframes -->
   <xacro:macro name="loop_subframe" params="current:=0
                                          max:=^">
     <xacro:if value="${max > current}">
-      <xacro:subframe name="${name}"
-                      subframe="level-${current+1}"
-                      xyz="0 0 ${(current+1)*shelf_gap}" />
+      <xacro:subframe name="${root}"
+                      subframe="level${current+1}"
+                      frame_id="${root}${dl}board${current+1}"
+                      xyz="0 0 0" />
       <xacro:loop_subframe current="${current+1}"/>
     </xacro:if>
   </xacro:macro>
 
-  <xacro:loop_subframe max="${shelf_number}"/>
+  <xacro:loop_subframe max="${board_number}"/>
 
   <!-- Base link -->
-  <xacro:dummy name="${base_link}"
+  <xacro:dummy name="${root}"
                frame_id="${frame_id}"
                xyz="${xyz}" rpy="${rpy}" />
 
   <!-- Shelf posts -->
-  <xacro:box name="${name}${dl}post_bl"
-             frame_id="${base_link}"
+  <xacro:box name="${root}${dl}post_bl"
+             frame_id="${root}"
              dimensions="${post_dimensions}"
-             xyz="${-(shelf_dim_x/2 - post_dim_x/2)} ${-(shelf_dim_y/2 - post_dim_y/2)}   ${post_dim_z/2}" />
+             xyz="${-(board_dim_x/2 - post_dim_x/2)} ${-(board_dim_y/2 - post_dim_y/2)}   ${post_dim_z/2}" />
 
-  <xacro:box name="${name}${dl}post_br"
-             frame_id="${name}${dl}post_bl"
+  <xacro:box name="${root}${dl}post_br"
+             frame_id="${root}${dl}post_bl"
              dimensions="${post_dimensions}"
-             xyz="0 ${shelf_dim_y - post_dim_y} 0"/>
+             xyz="0 ${board_dim_y - post_dim_y} 0"/>
   
 
-  <xacro:box name="${name}${dl}post_fl"
-             frame_id="${name}${dl}post_bl"
+  <xacro:box name="${root}${dl}post_fl"
+             frame_id="${root}${dl}post_bl"
              dimensions="${post_dimensions}"
-             xyz="${shelf_dim_x - post_dim_x} 0 0"/>
+             xyz="${board_dim_x - post_dim_x} 0 0"/>
 
-  <xacro:box name="${name}${dl}post_fr"
-             frame_id="${name}${dl}post_fl"
+  <xacro:box name="${root}${dl}post_fr"
+             frame_id="${root}${dl}post_fl"
              dimensions="${post_dimensions}"
-             xyz="0 ${shelf_dim_y - post_dim_y} 0"/>
+             xyz="0 ${board_dim_y - post_dim_y} 0"/>
 
 
-  <!-- Shelf -->
-  <xacro:macro name="loop_shelf" params="current:=0
+  <!-- Shelf boards -->
+  <xacro:macro name="loop_board" params="current:=0
                                          max:=^">
     <xacro:if value="${max > current}">
-      <xacro:box name="${name}${dl}${current+1}"
-                 frame_id="${base_link}"
-                 dimensions="${shelf_dimensions}"
-                 xyz="0 0 ${(current+1)*shelf_gap - shelf_dim_z/2}"/>
-      <xacro:loop_shelf current="${current+1}"/>
+      <xacro:box name="${root}${dl}board${current+1}"
+                 frame_id="${root}"
+                 dimensions="${board_dimensions}"
+                 xyz="0 0 ${(current+1)*board_gap - board_dim_z/2}"/>
+      <xacro:loop_board current="${current+1}"/>
     </xacro:if>
   </xacro:macro>
 
-  <xacro:loop_shelf max="${shelf_number}"/>
+  <xacro:loop_board max="${board_number}"/>
 
   </xacro:macro>
 </robot>

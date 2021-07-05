@@ -48,7 +48,7 @@
 class SceneParser
 {
 public:
-	bool loadURDFFile(ros::NodeHandle& nh);
+	bool loadURDFFile(ros::NodeHandle& nh, const std::string& param_name);
 	const moveit_msgs::PlanningScene& getPlanningScene();
 
 private:

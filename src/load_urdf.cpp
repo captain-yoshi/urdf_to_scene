@@ -48,17 +48,23 @@ int main(int argc, char** argv) {
 
 	ros::NodeHandle nh(ros::this_node::getName());
 
+	// Remove all objects
 	moveit::planning_interface::PlanningSceneInterface psi;
+	std::vector<std::string> object_names = psi.getKnownObjectNames();
+	psi.removeCollisionObjects(object_names);
 
+	// Parse URDF into a planning scene
 	SceneParser parser;
-	parser.loadURDFFile(nh);
+	parser.loadURDFFile(nh, "/scene_urdf");
 	const auto& ps = parser.getPlanningScene();
 
+	// Add collision objects to the planning scene
 	if (!psi.applyCollisionObjects(ps.world.collision_objects)) {
 		ROS_ERROR("Failed to apply collision objects");
 	}
 
 	/*
+	// Debug
 	std::string file;
 	if (!nh.getParam("/scene_urdf", file))
 	   ROS_ERROR("Robot start states not found");
