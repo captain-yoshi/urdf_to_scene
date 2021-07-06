@@ -11,13 +11,13 @@
                xyz="0.8 0 0"/>
 
   <!-- Add cube on book-shelf level-1 -->
-  <xacro:box name="box"
+  <xacro:framebox name="box"
              frame_id="book_shelf/level1"
              xyz="0 0 0.005"
              dimensions="0.03 0.03 0.03"/>
 
   <!-- Add can on book-shelf level-2 -->
-  <xacro:mesh name="can"
+  <xacro:framemesh name="can"
               frame_id="book_shelf/level2"
               scale="0.01 0.01 0.01"
               resource="package://scene_parser/mesh/can.stl"/>

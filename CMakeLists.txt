@@ -4,17 +4,16 @@ project(scene_parser)
 find_package(Boost REQUIRED)
 find_package(catkin REQUIRED COMPONENTS
 	eigen_conversions
-	geometry_msgs
 	geometric_shapes
+	geometry_msgs
 	moveit_core
+	moveit_ros_benchmarks
 	moveit_ros_planning
 	moveit_ros_planning_interface
-	moveit_ros_benchmarks
-	moveit_task_constructor_msgs
 	moveit_visual_tools
 	roscpp
-	visualization_msgs
 	urdf
+	visualization_msgs
 )
 
 catkin_package(
@@ -23,15 +22,16 @@ catkin_package(
 	INCLUDE_DIRS
 		include
 	CATKIN_DEPENDS
+		geometric_shapes
 		geometry_msgs
 		moveit_core
+		moveit_ros_benchmarks
 		moveit_ros_planning
 		moveit_ros_planning_interface
-		moveit_ros_benchmarks
-		moveit_task_constructor_msgs
 		moveit_visual_tools
-		visualization_msgs
+		roscpp
 		urdf
+		visualization_msgs
 )
 
 set(CMAKE_CXX_STANDARD 14)
@@ -43,3 +43,11 @@ add_library(${PROJECT_NAME}
 
 add_executable(load_urdf src/load_urdf.cpp)
 target_link_libraries(load_urdf ${PROJECT_NAME} ${catkin_LIBRARIES})
+
+install(DIRECTORY include/${PROJECT_NAME}/
+	DESTINATION ${CATKIN_PACKAGE_INCLUDE_DESTINATION})
+
+install(TARGETS load_urdf ${PROJECT_NAME}
+	LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
+	ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
+	RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION})

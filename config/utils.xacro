@@ -3,10 +3,10 @@
   <!-- Utility macros for creating collision objects as URDF -->
 
   <!-- Store tf information as a joint for the collision object -->
-  <xacro:macro name="object_joint_" params="name frame_id *origin">
+  <xacro:macro name="tf" params="name parent *origin">
     <joint name="${name}" type="fixed">
       <xacro:insert_block name="origin" />
-      <parent link="${frame_id}" />
+      <parent link="${parent}" />
       <child link="${name}" />
       <axis xyz="0 0 1" />
     </joint>
@@ -26,33 +26,41 @@
   <!-- Add dummy link with no collision -->
   <xacro:macro name="dummy" params="name frame_id xyz:='0 0 0' rpy:='0 0 0'">
     <link name="${name}"/>
-    
-    <xacro:object_joint_ name="${name}" frame_id="${frame_id}">
+
+    <xacro:tf name="${name}" parent="${frame_id}">
       <origin xyz="${xyz}" rpy="${rpy}"/>
-    </xacro:object_joint_>>
+    </xacro:tf>
   </xacro:macro>
 
   <!-- Add mesh -->
-  <xacro:macro name="mesh" params="name frame_id resource xyz:='0 0 0' rpy:='0 0 0' scale:='1.0 1.0 1.0'">
-    <xacro:object_link_ name="${name}" frame_id="${frame_id}">
-        <mesh filename="${resource}" scale="${scale}" />
-    </xacro:object_link_> 
-    
-    <xacro:object_joint_ name="${name}" frame_id="${frame_id}">
+  <xacro:macro name="framemesh" params="name frame_id resource xyz:='0 0 0' rpy:='0 0 0' scale:='1.0 1.0 1.0'">
+    <link name="${name}">
+      <collision>
+        <geometry>
+          <mesh filename="${resource}" scale="${scale}" />
+        </geometry>
+      </collision>
+    </link>
+    <xacro:tf name="${name}" parent="${frame_id}">
       <origin xyz="${xyz}" rpy="${rpy}"/>
-    </xacro:object_joint_>
+    </xacro:tf>
   </xacro:macro>
 
   <!-- Add primitive box -->
-  <xacro:macro name="box" params="name frame_id dimensions xyz:='0 0 0' rpy:='0 0 0'">
-    <xacro:object_link_ name="${name}" frame_id="${frame_id}">
+  <xacro:macro name="framebox" params="name frame_id dimensions xyz:='0 0 0' rpy:='0 0 0'">
+    <link name="${name}">
+      <collision>
+        <!-- define frame at bottom of geometry -->
+        <origin xyz="${xyz.split()[0]} ${xyz.split()[1]} ${float(xyz.split()[2]) + float(dimensions.split()[2])}" />
+        <geometry>
           <box size="${dimensions}" />
-    </xacro:object_link_> 
-    <xacro:object_joint_ name="${name}" frame_id="${frame_id}">
+        </geometry>
+      </collision>
+    </link>
+    <xacro:tf name="${name}" parent="${frame_id}">
       <origin xyz="${xyz}" rpy="${rpy}"/>
-    </xacro:object_joint_>
+    </xacro:tf>
   </xacro:macro>
-
 
   <!-- Add subframe -->
   <!-- Optional: frame_id defaults to name parameter if empty -->
@@ -60,15 +68,14 @@
     <link name="${name}${dl}${subframe}"/>
 
     <xacro:if value="${len(frame_id) > 0}">
-      <xacro:object_joint_ name="${name}${dl}${subframe}" frame_id="${frame_id}">
+      <xacro:tf name="${name}${dl}${subframe}" parent="${frame_id}">
         <origin xyz="${xyz}" rpy="${rpy}"/>
-      </xacro:object_joint_>
+      </xacro:tf>
     </xacro:if>
     <xacro:unless value="${len(frame_id) > 0}">
-      <xacro:object_joint_ name="${name}${dl}${subframe}" frame_id="${name}">
+      <xacro:tf name="${name}${dl}${subframe}" parent="${name}">
         <origin xyz="${xyz}" rpy="${rpy}"/>
-      </xacro:object_joint_>
+      </xacro:tf>
     </xacro:unless>
   </xacro:macro>
-
 </robot>
