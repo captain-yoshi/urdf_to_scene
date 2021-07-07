@@ -9,20 +9,22 @@
                                     xyz:='0 0 0'
                                     rpy:='0 0 0'
                                     board_number:=5
-                                    board_dim_x:=0.6
-                                    board_dim_y:=1.5
-                                    board_dim_z:=0.02
-                                    post_dim_x:=0.035
-                                    post_dim_y:=0.035
-                                    post_dim_z:=1.25
+                                    board_dimensions:='0.6 1.5 0.02'
+                                    post_dimensions:='0.035 0.035 1.25'
                                     dl:=_">
 
   <!-- Property -->
   <xacro:property name="root" value="${name}" />
-  <xacro:property name="board_dimensions" value="${board_dim_x} ${board_dim_y} ${board_dim_z}" />
-  <xacro:property name="post_dimensions" value="${post_dim_x} ${post_dim_y} ${post_dim_z}" />
   <xacro:property name="board_gap" value="${post_dim_z/(board_number)}" />
 
+  <xacro:property name="board_dim_x" value="${board_dimensions.split()[0]}" />
+  <xacro:property name="board_dim_y" value="${board_dimensions.split()[1]}" />
+  <xacro:property name="board_dim_z" value="${board_dimensions.split()[2]}" />
+
+  <xacro:property name="post_dim_x" value="${post_dimensions.split()[0]}" />
+  <xacro:property name="post_dim_y" value="${post_dimensions.split()[1]}" />
+  <xacro:property name="post_dim_z" value="${post_dimensions.split()[2]}" />
+  
   <!-- Subframes -->
   <xacro:macro name="loop_subframe" params="current:=0
                                          max:=^">
@@ -44,26 +46,25 @@
 
   <!-- Shelf posts -->
   <xacro:framebox name="${root}${dl}post_bl"
-             frame_id="${root}"
-             dimensions="${post_dimensions}"
-             xyz="${-(board_dim_x/2 - post_dim_x/2)} ${-(board_dim_y/2 - post_dim_y/2)}   ${post_dim_z/2}" />
+                  frame_id="${root}"
+                  dimensions="${post_dimensions}"
+                  xyz="${-(board_dim_x/2 - post_dim_x/2)} ${-(board_dim_y/2 - post_dim_y/2)}   ${post_dim_z/2}" />
 
   <xacro:framebox name="${root}${dl}post_br"
-             frame_id="${root}${dl}post_bl"
-             dimensions="${post_dimensions}"
-             xyz="0 ${board_dim_y - post_dim_y} 0"/>
+                  frame_id="${root}${dl}post_bl"
+                  dimensions="${post_dimensions}"
+                  xyz="0 ${board_dim_y - post_dim_y} 0"/>
   
 
   <xacro:framebox name="${root}${dl}post_fl"
-             frame_id="${root}${dl}post_bl"
-             dimensions="${post_dimensions}"
-             xyz="${board_dim_x - post_dim_x} 0 0"/>
+                  frame_id="${root}${dl}post_bl"
+                  dimensions="${post_dimensions}"
+                  xyz="${board_dim_x - post_dim_x} 0 0"/>
 
   <xacro:framebox name="${root}${dl}post_fr"
-             frame_id="${root}${dl}post_fl"
-             dimensions="${post_dimensions}"
-             xyz="0 ${board_dim_y - post_dim_y} 0"/>
-
+                  frame_id="${root}${dl}post_fl"
+                  dimensions="${post_dimensions}"
+                  xyz="0 ${board_dim_y - post_dim_y} 0"/>
 
   <!-- Shelf boards -->
   <xacro:macro name="loop_board" params="current:=0
