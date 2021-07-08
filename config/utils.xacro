@@ -12,17 +12,6 @@
     </joint>
   </xacro:macro>
 
-  <!-- Store collision type as a link for the collision object -->
-  <xacro:macro name="object_link_" params="name frame_id *geometry">
-    <link name="${name}">
-      <collision>
-        <geometry>
-          <xacro:insert_block name="geometry" />
-        </geometry>
-      </collision>
-    </link>
-  </xacro:macro>
-
   <!-- Add dummy link with no collision -->
   <xacro:macro name="dummy" params="name frame_id xyz:='0 0 0' rpy:='0 0 0'">
     <link name="${name}"/>
