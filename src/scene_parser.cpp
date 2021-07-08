@@ -43,6 +43,7 @@
 #include <geometric_shapes/shape_extents.h>
 #include <shape_msgs/SolidPrimitive.h>
 #include <geometry_msgs/PoseStamped.h>
+#include <eigen_conversions/eigen_msg.h>
 
 bool SceneParser::loadURDFFile(ros::NodeHandle& nh, const std::string& param_name) {
 	if (!model_.initParamWithNodeHandle(param_name, nh)) {

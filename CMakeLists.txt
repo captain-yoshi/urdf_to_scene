@@ -22,6 +22,7 @@ catkin_package(
 	INCLUDE_DIRS
 		include
 	CATKIN_DEPENDS
+		eigen_conversions
 		geometric_shapes
 		geometry_msgs
 		moveit_core
