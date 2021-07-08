@@ -53,6 +53,11 @@ bool SceneParser::loadURDFFile(ros::NodeHandle& nh, const std::string& param_nam
 	return true;
 }
 
+void SceneParser::getCollisionObjects(std::vector<moveit_msgs::CollisionObject>& collision_objects) {
+	parseURDFmodel();
+	collision_objects = scene_.world.collision_objects;
+}
+
 const moveit_msgs::PlanningScene& SceneParser::getPlanningScene() {
 	parseURDFmodel();
 	return scene_;

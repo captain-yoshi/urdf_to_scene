@@ -49,6 +49,8 @@ class SceneParser
 {
 public:
 	bool loadURDFFile(ros::NodeHandle& nh, const std::string& param_name);
+
+	void getCollisionObjects(std::vector<moveit_msgs::CollisionObject>& collision_objects);
 	const moveit_msgs::PlanningScene& getPlanningScene();
 
 private:
