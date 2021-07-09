@@ -67,6 +67,35 @@ void SceneParser::parseURDFmodel() {
 	auto root_link = model_.getRoot();
 
 	std::vector<urdf::LinkSharedPtr> links = root_link->child_links;
+	if (root_link->collision) {
+		// Calculate parent to joint tf with offset from previous dummy link/s
+		Eigen::Isometry3d parent_to_joint_tf = Eigen::Isometry3d::Identity();
+
+		// Parse geometry type
+		// TODO: Add other primitives + planes
+		scene_.world.collision_objects.emplace_back();
+		urdf::GeometrySharedPtr geom = root_link->collision->geometry;
+
+		if (geom->type == geom->BOX) {
+			auto box = std::dynamic_pointer_cast<urdf::Box>(geom);
+			shape_msgs::SolidPrimitive primitive;
+			primitive.type = primitive.BOX;
+			primitive.dimensions.resize(3);
+			primitive.dimensions = { box->dim.x, box->dim.y, box->dim.z };
+
+			createCollisionObjectPrimitive(scene_.world.collision_objects.back(), root_link->name, primitive,
+			                               parent_to_joint_tf, root_link->name);
+		} else if (geom->type == geom->MESH) {
+			auto mesh = std::dynamic_pointer_cast<urdf::Mesh>(geom);
+			shape_msgs::SolidPrimitive primitive;
+			const Eigen::Vector3d scaling = Eigen::Vector3d(mesh->scale.x, mesh->scale.y, mesh->scale.z);
+
+			createCollisionObjectMesh(scene_.world.collision_objects.back(), root_link->name, mesh->filename,
+			                          parent_to_joint_tf, root_link->name, scaling);
+		} else {
+			ROS_ERROR("Collision geometry type not supported");
+		}
+	}
 
 	for (const auto& link : links) {
 		Eigen::Isometry3d offset = Eigen::Isometry3d::Identity();
@@ -77,38 +106,103 @@ void SceneParser::parseURDFmodel() {
 }
 
 // TODO break down into smaller pieces
-void SceneParser::parseChildLink(const urdf::LinkSharedPtr& link, const Eigen::Isometry3d& offset,
-                                 std::map<std::string, std::string>& dummy_link_names) {
+
+void SceneParser::parseChildJointFromDummyLink(const urdf::LinkConstSharedPtr& link, const urdf::JointSharedPtr& joint,
+                                               const Eigen::Isometry3d& offset,
+                                               std::map<std::string, std::string>& dummy_link_names) {
 	Eigen::Isometry3d frame = Eigen::Isometry3d::Identity();
 
+	urdfPoseToEigenIsometry(joint->parent_to_joint_origin_transform, frame);
+	frame = offset * frame;
+
+	// Map dummy link to a link with collision
+	auto parent_link = link->getParent();
+	while (parent_link) {
+		if (parent_link->collision) {
+			dummy_link_names.insert(std::make_pair(link->name, parent_link->name));
+			break;
+		}
+		parent_link = parent_link->getParent();
+	}
+	if (!parent_link)
+		dummy_link_names.insert(std::make_pair(link->name, model_.getRoot()->name));
+
+	parseChildLink(model_.getLink(joint->child_link_name), frame, dummy_link_names);
+}
+
+void SceneParser::parseChildJointFromCollisionLink(const urdf::LinkConstSharedPtr& link,
+                                                   const urdf::JointSharedPtr& joint, const Eigen::Isometry3d& offset,
+                                                   std::map<std::string, std::string>& dummy_link_names) {
+	Eigen::Isometry3d frame = Eigen::Isometry3d::Identity();
+	// Calculate parent to joint tf with offset from previous dummy link/s
+	Eigen::Isometry3d parent_to_joint_tf = Eigen::Isometry3d::Identity();
+
+	urdfPoseToEigenIsometry(joint->parent_to_joint_origin_transform, parent_to_joint_tf);
+
+	std::string frame_id = link->getParent()->name;
+	if (dummy_link_names.find(frame_id) != dummy_link_names.end()) {
+		frame_id = dummy_link_names.find(frame_id)->second;
+	}
+	parent_to_joint_tf = offset * parent_to_joint_tf;
+
+	// Parse geometry type
+	// TODO: Add other primitives + planes
+	scene_.world.collision_objects.emplace_back();
+	urdf::GeometrySharedPtr geom = link->collision->geometry;
+
+	if (geom->type == geom->BOX) {
+		auto box = std::dynamic_pointer_cast<urdf::Box>(geom);
+		shape_msgs::SolidPrimitive primitive;
+		primitive.type = primitive.BOX;
+		primitive.dimensions.resize(3);
+		primitive.dimensions = { box->dim.x, box->dim.y, box->dim.z };
+
+		createCollisionObjectPrimitive(scene_.world.collision_objects.back(), link->name, primitive, parent_to_joint_tf,
+		                               frame_id);
+	} else if (geom->type == geom->MESH) {
+		auto mesh = std::dynamic_pointer_cast<urdf::Mesh>(geom);
+		shape_msgs::SolidPrimitive primitive;
+		const Eigen::Vector3d scaling = Eigen::Vector3d(mesh->scale.x, mesh->scale.y, mesh->scale.z);
+
+		createCollisionObjectMesh(scene_.world.collision_objects.back(), link->name, mesh->filename, parent_to_joint_tf,
+		                          frame_id, scaling);
+	} else {
+		ROS_ERROR("Collision geometry type not supported");
+	}
+}
+void SceneParser::parseChildLink(const urdf::LinkConstSharedPtr& link, const Eigen::Isometry3d& offset,
+                                 std::map<std::string, std::string>& dummy_link_names) {
+	Eigen::Isometry3d frame = Eigen::Isometry3d::Identity();
 	// Dummy links or subframes
 	if (!link->collision) {
-		if (model_.getJoint(link->name)) {
-			urdfPoseToEigenIsometry(model_.getJoint(link->name)->parent_to_joint_origin_transform, frame);
-			frame = offset * frame;
+		urdfPoseToEigenIsometry(link->parent_joint->parent_to_joint_origin_transform, frame);
+		frame = offset * frame;
 
-			// Map dummy link to a link with collision
-			auto parent_link = link->getParent();
-			while (parent_link) {
-				if (parent_link->collision) {
-					dummy_link_names.insert(std::make_pair(link->name, parent_link->name));
-					break;
-				}
-				parent_link = parent_link->getParent();
+		// Map dummy link to a link with collision
+		auto parent_link = link->getParent();
+		while (parent_link) {
+			if (parent_link->collision) {
+				dummy_link_names.insert(std::make_pair(link->name, parent_link->name));
+				break;
 			}
-			if (!parent_link)
-				dummy_link_names.insert(std::make_pair(link->name, model_.getRoot()->name));
+			parent_link = parent_link->getParent();
 		}
+		if (!parent_link)
+			dummy_link_names.insert(std::make_pair(link->name, model_.getRoot()->name));
 	} else {
 		// Calculate parent to joint tf with offset from previous dummy link/s
 		Eigen::Isometry3d parent_to_joint_tf = Eigen::Isometry3d::Identity();
-		urdfPoseToEigenIsometry(model_.getJoint(link->name)->parent_to_joint_origin_transform, parent_to_joint_tf);
+		Eigen::Isometry3d joint_to_collision_tf = Eigen::Isometry3d::Identity();
+
+		urdfPoseToEigenIsometry(link->parent_joint->parent_to_joint_origin_transform, parent_to_joint_tf);
+		urdfPoseToEigenIsometry(link->collision->origin, joint_to_collision_tf);
 
 		std::string frame_id = link->getParent()->name;
 		if (dummy_link_names.find(frame_id) != dummy_link_names.end()) {
 			frame_id = dummy_link_names.find(frame_id)->second;
 		}
-		parent_to_joint_tf = offset * parent_to_joint_tf;
+
+		parent_to_joint_tf = offset * parent_to_joint_tf * joint_to_collision_tf;
 
 		// Parse geometry type
 		// TODO: Add other primitives + planes
@@ -121,6 +215,24 @@ void SceneParser::parseChildLink(const urdf::LinkSharedPtr& link, const Eigen::I
 			primitive.type = primitive.BOX;
 			primitive.dimensions.resize(3);
 			primitive.dimensions = { box->dim.x, box->dim.y, box->dim.z };
+
+			createCollisionObjectPrimitive(scene_.world.collision_objects.back(), link->name, primitive,
+			                               parent_to_joint_tf, frame_id);
+		} else if (geom->type == geom->CYLINDER) {
+			auto cylinder = std::dynamic_pointer_cast<urdf::Cylinder>(geom);
+			shape_msgs::SolidPrimitive primitive;
+			primitive.type = primitive.CYLINDER;
+			primitive.dimensions.resize(2);
+			primitive.dimensions = { cylinder->length, cylinder->radius };
+
+			createCollisionObjectPrimitive(scene_.world.collision_objects.back(), link->name, primitive,
+			                               parent_to_joint_tf, frame_id);
+		} else if (geom->type == geom->SPHERE) {
+			auto sphere = std::dynamic_pointer_cast<urdf::Sphere>(geom);
+			shape_msgs::SolidPrimitive primitive;
+			primitive.type = primitive.SPHERE;
+			primitive.dimensions.resize(1);
+			primitive.dimensions = { sphere->radius };
 
 			createCollisionObjectPrimitive(scene_.world.collision_objects.back(), link->name, primitive,
 			                               parent_to_joint_tf, frame_id);

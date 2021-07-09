@@ -55,9 +55,14 @@ public:
 
 private:
 	void parseURDFmodel();
-	void parseChildLink(const urdf::LinkSharedPtr& rchild_link, const Eigen::Isometry3d& offset,
+	void parseChildLink(const urdf::LinkConstSharedPtr& rchild_link, const Eigen::Isometry3d& offset,
 	                    std::map<std::string, std::string>& dummy_link_names);
-
+	void parseChildJointFromCollisionLink(const urdf::LinkConstSharedPtr& link, const urdf::JointSharedPtr& joint,
+	                                      const Eigen::Isometry3d& offset,
+	                                      std::map<std::string, std::string>& dummy_link_names);
+	void parseChildJointFromDummyLink(const urdf::LinkConstSharedPtr& link, const urdf::JointSharedPtr& joint,
+	                                  const Eigen::Isometry3d& offset,
+	                                  std::map<std::string, std::string>& dummy_link_names);
 	void urdfPoseToEigenIsometry(const urdf::Pose& urdf_pose, Eigen::Isometry3d& eigen_pose);
 
 	void createCollisionObjectPrimitive(moveit_msgs::CollisionObject& collision_object, const std::string& object_id,

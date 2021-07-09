@@ -8,17 +8,28 @@
   <!-- Create default shelf -->
   <xacro:shelf name="book_shelf"
                frame_id="world"
-               xyz="0.8 0 0"/>
+               xyz="0.8 0 0"
+               board_dimensions="0.6 1.5 0.02"/>
 
   <!-- Add cube on book-shelf level-1 -->
   <xacro:framebox name="box"
-             frame_id="book_shelf/level1"
-             xyz="0 0 0.005"
-             dimensions="0.03 0.03 0.03"/>
+             frame_id="book_shelf_board1/top"
+             xyz="0 0 0"
+             dimensions="0.05 0.05 0.12"/>
+
+  <xacro:framebox name="box1"
+             frame_id="book_shelf_post_bl/bottom"
+             xyz="0 0 0"
+             dimensions="0.05 0.05 0.12"/>
+
+  <xacro:framebox name="box2"
+             frame_id="book_shelf_post_bl/top"
+             xyz="0 0 0"
+             dimensions="0.05 0.05 0.12"/>
 
   <!-- Add can on book-shelf level-2 -->
   <xacro:framemesh name="can"
-              frame_id="book_shelf/level2"
+              frame_id="book_shelf_board5/top"
               scale="0.01 0.01 0.01"
               resource="package://scene_parser/mesh/can.stl"/>
 

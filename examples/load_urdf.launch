@@ -3,8 +3,12 @@
   <!-- By default, we are not in debug mode -->
   <arg name="launch_prefix" default=""/>
 
+
   <!-- Load xacro scene -->
+  <!-- <param name="scene_urdf" textfile="$(find moveit_resources_panda_description)/urdf/panda.urdf"/> -->
   <param name="scene_urdf" command="$(find xacro)/xacro '$(find scene_parser)/config/scene.urdf.xacro'"/>
+  <!-- <param name="scene_urdf" textfile="$(find moveit_resources_pr2_description)/urdf/robot.xml"/>-->
+  <!-- <param name="scene_urdf" command="$(find xacro)/xacro '$(find ur_description)/urdf/ur5_joint_limited_robot.urdf.xacro'"/> -->
 
   <!-- Launch node -->
   <node name="load_urdf" pkg="scene_parser" type="load_urdf" output="screen" required="true" launch-prefix="$(arg launch_prefix)"/>
