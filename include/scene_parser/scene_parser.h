@@ -40,10 +40,9 @@
 
 #include <ros/ros.h>
 
-#include <urdf/model.h>
-
-#include <moveit_msgs/PlanningScene.h>
 #include <eigen_conversions/eigen_msg.h>
+#include <urdf/model.h>
+#include <moveit_msgs/PlanningScene.h>
 
 class SceneParser
 {
@@ -55,9 +54,10 @@ public:
 
 private:
 	void parseURDFmodel();
-	void parseChildLink(const urdf::LinkSharedPtr& rchild_link, const Eigen::Isometry3d& offset,
-	                    std::map<std::string, std::string>& dummy_link_names);
-
+	void parseLink(const urdf::LinkConstSharedPtr& rchild_link, const Eigen::Isometry3d& offset,
+	               std::map<std::string, std::string>& dummy_link_names);
+	void parseCollisionGeometry(const urdf::LinkConstSharedPtr& link, const std::string& frame_id,
+	                            const Eigen::Isometry3d& parent_to_collision_tf);
 	void urdfPoseToEigenIsometry(const urdf::Pose& urdf_pose, Eigen::Isometry3d& eigen_pose);
 
 	void createCollisionObjectPrimitive(moveit_msgs::CollisionObject& collision_object, const std::string& object_id,

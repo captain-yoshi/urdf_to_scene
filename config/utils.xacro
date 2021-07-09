@@ -39,8 +39,6 @@
   <xacro:macro name="framebox" params="name frame_id dimensions xyz:='0 0 0' rpy:='0 0 0'">
     <link name="${name}">
       <collision>
-        <!-- define frame at bottom of geometry -->
-        <origin xyz="${xyz.split()[0]} ${xyz.split()[1]} ${float(xyz.split()[2]) + float(dimensions.split()[2])}" />
         <geometry>
           <box size="${dimensions}" />
         </geometry>
