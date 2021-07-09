@@ -9,15 +9,12 @@
   <xacro:property name="cube_name" value="cube" />
   <xacro:property name="dl" value="_" />
 
-
-
   <xacro:opencrate name="clear_box1"
                    frame_id="world"
                    xyz="${0.429/2 + 0.16} ${0.292/2 + 0.01/2} 0"
                    dimensions="0.429 0.292 0.149"
                    thickness="0.01"/>
 
-  
   <xacro:opencrate name="clear_box2"
                    frame_id="clear_box1"
                    xyz="0 ${-0.292-0.01} 0"
@@ -31,7 +28,7 @@
 
   <xacro:subframe name="clear_box2"
                   subframe="bottom"
-                  xyz="0 0 0.01" />
+                  xyz="0 0 ${0.01/2}" />
 
   <!-- TODO add to utility file -->
   <xacro:macro name="linearpattern" params="current:=0 frame_id:=^ index:=0 max:=^ xyz:=^ gap:=^">
