@@ -221,3 +221,17 @@ void SceneParser::createCollisionObjectMesh(moveit_msgs::CollisionObject& collis
 	collision_object.mesh_poses.resize(1);
 	collision_object.mesh_poses[0] = pose_stamped.pose;
 }
+
+void SceneParser::printTF(const std::string& tf_name, const Eigen::Isometry3d& tf) {
+	std::cout << tf_name << ":" << std::endl;
+
+	std::cout << "xyz" << std::endl;
+	std::cout << tf.translation().matrix().x() << " ";
+	std::cout << tf.translation().matrix().y() << " ";
+	std::cout << tf.translation().matrix().z() << std::endl;
+
+	std::cout << "rpy" << std::endl;
+	std::cout << tf.rotation().eulerAngles(2, 1, 0).z() << " ";
+	std::cout << tf.rotation().eulerAngles(2, 1, 0).y() << " ";
+	std::cout << tf.rotation().eulerAngles(2, 1, 0).x() << std::endl;
+}

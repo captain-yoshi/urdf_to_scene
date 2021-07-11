@@ -52,6 +52,8 @@ public:
 	void getCollisionObjects(std::vector<moveit_msgs::CollisionObject>& collision_objects);
 	const moveit_msgs::PlanningScene& getPlanningScene();
 
+	void printTF(const std::string& tf_name, const Eigen::Isometry3d& tf);
+
 private:
 	void parseURDFmodel();
 	void parseLink(const urdf::LinkConstSharedPtr& rchild_link, const Eigen::Isometry3d& offset,
