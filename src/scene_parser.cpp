@@ -69,8 +69,9 @@ void SceneParser::parseURDFmodel() {
 
 	// Parse collision geomtery
 	if (root_link->collision) {
-		Eigen::Isometry3d root_to_root_tf = Eigen::Isometry3d::Identity();
-		parseCollisionGeometry(root_link, root_link->name, root_to_root_tf);
+		Eigen::Isometry3d link_to_collision_tf = Eigen::Isometry3d::Identity();
+		urdfPoseToEigenIsometry(root_link->collision->origin, link_to_collision_tf);
+		parseCollisionGeometry(root_link, root_link->name, link_to_collision_tf);
 	}
 
 	// Parse child links
@@ -106,19 +107,23 @@ void SceneParser::parseLink(const urdf::LinkConstSharedPtr& link, const Eigen::I
 	}
 	// Calculate parent to joint tf with offset from previous dummy link/s
 	else {
-		Eigen::Isometry3d parent_to_joint_tf = Eigen::Isometry3d::Identity();
-		Eigen::Isometry3d joint_to_collision_tf = Eigen::Isometry3d::Identity();
+		Eigen::Isometry3d parentjoint_to_link_tf = Eigen::Isometry3d::Identity();
+		Eigen::Isometry3d link_to_collision_tf = Eigen::Isometry3d::Identity();
+		Eigen::Isometry3d parentjoint_to_collision_tf = Eigen::Isometry3d::Identity();
 
-		urdfPoseToEigenIsometry(link->parent_joint->parent_to_joint_origin_transform, parent_to_joint_tf);
-		urdfPoseToEigenIsometry(link->collision->origin, joint_to_collision_tf);
+		urdfPoseToEigenIsometry(link->parent_joint->parent_to_joint_origin_transform, parentjoint_to_link_tf);
+		urdfPoseToEigenIsometry(link->collision->origin, link_to_collision_tf);
 
 		std::string frame_id = link->getParent()->name;
 		if (dummy_link_names.find(frame_id) != dummy_link_names.end()) {
 			frame_id = dummy_link_names.find(frame_id)->second;
 		}
-		parent_to_joint_tf = offset * parent_to_joint_tf * joint_to_collision_tf;
+		// The collision object is added wrt. the frame_id
+		parentjoint_to_collision_tf = offset * parentjoint_to_link_tf * link_to_collision_tf;
+		parseCollisionGeometry(link, frame_id, parentjoint_to_collision_tf);
 
-		parseCollisionGeometry(link, frame_id, parent_to_joint_tf);
+		// We want the children links to be wrt. the link frame as opposed to the collsion frame
+		frame = link_to_collision_tf.inverse();
 	}
 
 	// Parse children links
