@@ -9,7 +9,7 @@ Load collision objects from a URDF to a planning scene:
 # Open Panda demo in another terminal
 # roslaunch moveit_resources_panda_moveit_config demo.launch
 
-roslaunch scene_parser load_urdf.launch
+roslaunch scene_parser load_urdf_scene.launch
 ```
 <p align="center">
 <img src="doc/open_shelf.png" alt="drawing" width="400"/>
