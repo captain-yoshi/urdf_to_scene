@@ -1,28 +1,23 @@
-# Collision Objects Parser
+# Name overlap bug 
 
-Create and parse collision objects from a URDF to a MoveIt CollisionObject message. 
+To reproduce the issue:
 
-**This package is under development by an intern! The API is extremly unstable and incomplete.**
+Add these lines in the `moveit_resources_panda_description` package `/panda_description/urdf/panda.urdf`
+```xml
+  <link name="world"/>
+  <joint name="world_joint" type="fixed">
+    <parent link="world"/>
+    <child link="panda_link0"/>
+    <origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.0"/>
+  </joint>
 
-Load collision objects from a URDF to a planning scene:
-```shell
-# Open Panda demo in another terminal
-# roslaunch moveit_resources_panda_moveit_config demo.launch
-
-roslaunch scene_parser load_urdf_scene.launch
 ```
-<p align="center">
-<img src="doc/open_shelf.png" alt="drawing" width="400"/>
-</p>
 
-Create diagram of URDF:
+Load the panda URDF as a collision object:
 ```shell
-# Create urdf
-rosrun xacro xacro scene.urdf.xacro > scene.urdf
+roslaunch moveit_resources_panda_moveit_config demo.launch
 
-# Create graph
-urdf_to_graphiz scene.urdf
+roslaunch scene_parser load_urdf_robot.launch
 ```
-<p align="center">
-<img src="doc/shelf_urdf.png" alt="drawing"/>
-</p>
+
+Targeting another panda urdf in the `load_urdf_robot.launch` with other link names (so that they do not overlap) fixes the issue.
