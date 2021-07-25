@@ -21,8 +21,30 @@
     </xacro:tf>
   </xacro:macro>
 
+  <!-- Add subframes for mesh -->
+  <xacro:macro name="loopmeshsubframes" params="current:=0 max:=^ node:=^ name:=^">
+    <xacro:if value="${max > current}">
+      <xacro:property name="xyz" value="0 0 0" />
+      <xacro:property name="rpy" value="0 0 0" />
+
+      <xacro:if value="${'xyz' in node[current]}">
+        <xacro:property name="xyz" value="${node[current]['xyz'][0]} ${node[current]['xyz'][1]} ${node[current]['xyz'][2]}" />
+      </xacro:if>>
+      <xacro:if value="${'rpy' in node[current]}">
+        <xacro:property name="rpy" value="${node[current]['rpy'][0]} ${node[current]['rpy'][1]} ${node[current]['rpy'][2]}" />
+      </xacro:if>>
+
+      <xacro:subframe name="${name}"
+                      subframe="${node[current]['name']}"
+                      frame_id="${name}"
+                      xyz="${xyz}" rpy="${rpy}" />
+
+      <xacro:loopmeshsubframes current="${current+1}"/>
+    </xacro:if>
+  </xacro:macro>
+
   <!-- Add mesh -->
-  <xacro:macro name="framemesh" params="name frame_id resource xyz:='0 0 0' rpy:='0 0 0' scale:='1.0 1.0 1.0'">
+  <xacro:macro name="framemesh" params="name frame_id resource xyz:='0 0 0' subframes:=false  rpy:='0 0 0' scale:='1.0 1.0 1.0'">
     <link name="${name}">
       <collision>
         <geometry>
@@ -33,6 +55,11 @@
     <xacro:tf name="${name}" parent="${frame_id}">
       <origin xyz="${xyz}" rpy="${rpy}"/>
     </xacro:tf>
+
+    <xacro:if value="${subframes}">
+      <xacro:loopmeshsubframes max="${len(subframes)}" node="${subframes}"/>
+    </xacro:if>
+
   </xacro:macro>
 
   <!-- Add primitive box -->
