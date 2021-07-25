@@ -25,19 +25,6 @@
   <xacro:property name="post_dim_y" value="${post_dimensions.split()[1]}" />
   <xacro:property name="post_dim_z" value="${post_dimensions.split()[2]}" />
   
-  <!-- Subframes -->
-  <xacro:macro name="loop_subframe" params="current:=0
-                                         max:=^">
-    <xacro:if value="${max > current}">
-      <xacro:subframe name="${root}"
-                      subframe="level${current+1}"
-                      frame_id="${root}${dl}board${current+1}"
-                      xyz="0 0 ${board_dim_z/2}" />
-      <xacro:loop_subframe current="${current+1}"/>
-    </xacro:if>
-  </xacro:macro>
-
-  <xacro:loop_subframe max="${board_number}"/>
 
   <!-- Base link -->
   <xacro:dummy name="${root}"
@@ -48,32 +35,31 @@
   <xacro:framebox name="${root}${dl}post_bl"
                   frame_id="${root}"
                   dimensions="${post_dimensions}"
-                  xyz="${-(board_dim_x/2 - post_dim_x/2)} ${-(board_dim_y/2 - post_dim_y/2)}   ${post_dim_z/2}" />
+                  xyz="${-(board_dim_x/2 - post_dim_x/2)} ${-(board_dim_y/2 - post_dim_y/2)}  0" />
 
   <xacro:framebox name="${root}${dl}post_br"
-                  frame_id="${root}${dl}post_bl"
+                  frame_id="${root}${dl}post_bl/bottom"
                   dimensions="${post_dimensions}"
                   xyz="0 ${board_dim_y - post_dim_y} 0"/>
   
 
   <xacro:framebox name="${root}${dl}post_fl"
-                  frame_id="${root}${dl}post_bl"
+                  frame_id="${root}${dl}post_bl/bottom"
                   dimensions="${post_dimensions}"
                   xyz="${board_dim_x - post_dim_x} 0 0"/>
 
   <xacro:framebox name="${root}${dl}post_fr"
-                  frame_id="${root}${dl}post_fl"
+                  frame_id="${root}${dl}post_fl/bottom"
                   dimensions="${post_dimensions}"
                   xyz="0 ${board_dim_y - post_dim_y} 0"/>
 
   <!-- Shelf boards -->
-  <xacro:macro name="loop_board" params="current:=0
-                                         max:=^">
+  <xacro:macro name="loop_board" params="current:=0 max:=^">
     <xacro:if value="${max > current}">
       <xacro:framebox name="${root}${dl}board${current+1}"
-                      frame_id="${root}"
-                      dimensions="${board_dimensions}"
-                      xyz="0 0 ${(current+1)*board_gap - board_dim_z/2}"/>
+                 frame_id="${root}"
+                 dimensions="${board_dimensions}"
+                 xyz="0 0 ${(current+1)*board_gap - board_dim_z}"/>
       <xacro:loop_board current="${current+1}"/>
     </xacro:if>
   </xacro:macro>
@@ -82,4 +68,3 @@
 
   </xacro:macro>
 </robot>
-

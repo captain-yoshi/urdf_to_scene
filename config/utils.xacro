@@ -37,16 +37,52 @@
 
   <!-- Add primitive box -->
   <xacro:macro name="framebox" params="name frame_id dimensions xyz:='0 0 0' rpy:='0 0 0'">
+    <!-- Parent joint -->
+    <xacro:tf name="${name}" parent="${frame_id}">
+      <!-- Add fixed origin and include z dimension -->
+      <origin xyz="${xyz.split()[0]} ${xyz.split()[1]} ${float(xyz.split()[2]) + float(dimensions.split()[2])}"/> 
+    </xacro:tf>
+    <!-- Child link -->
     <link name="${name}">
       <collision>
+        <!-- Replace collision visualization because box origin is in the middle -->
+        <origin xyz="0 0 ${-float(dimensions.split()[2])/2}" rpy="${rpy}"/>
         <geometry>
           <box size="${dimensions}" />
         </geometry>
       </collision>
     </link>
-    <xacro:tf name="${name}" parent="${frame_id}">
-      <origin xyz="${xyz}" rpy="${rpy}"/>
-    </xacro:tf>
+
+    <xacro:subframe name="${name}"
+                    subframe="bottom"
+                    frame_id="${name}"
+                    xyz="0 0 ${-float(dimensions.split()[2])}" />
+
+    <xacro:subframe name="${name}"
+                    subframe="top"
+                    frame_id="${name}"
+                    xyz="0 0 ${float(dimensions.split()[2])}" />
+
+    <xacro:subframe name="${name}"
+                    subframe="back"
+                    frame_id="${name}"
+                    xyz="${-float(dimensions.split()[0])/2} 0 0" />
+
+    <xacro:subframe name="${name}"
+                    subframe="front"
+                    frame_id="${name}"
+                    xyz="${float(dimensions.split()[0])/2} 0 0" />
+
+    <xacro:subframe name="${name}"
+                    subframe="left"
+                    frame_id="${name}"
+                    xyz="0 ${-float(dimensions.split()[1])/2} 0" />
+
+    <xacro:subframe name="${name}"
+                    subframe="right"
+                    frame_id="${name}"
+                    xyz="0 ${float(dimensions.split()[1])/2} 0" />
+
   </xacro:macro>
 
   <!-- Add subframe -->
