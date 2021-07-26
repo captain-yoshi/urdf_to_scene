@@ -46,9 +46,17 @@
 #include <geometric_shapes/shape_extents.h>
 #include <shape_msgs/SolidPrimitive.h>
 
-bool SceneParser::loadURDFFile(ros::NodeHandle& nh, const std::string& param_name) {
+bool SceneParser::loadURDF(ros::NodeHandle& nh, const std::string& param_name) {
 	if (!model_.initParamWithNodeHandle(param_name, nh)) {
-		ROS_ERROR("Failed to load URDF");
+		ROS_ERROR("Failed to load URDF from param server : %s", param_name.c_str());
+		return false;
+	}
+	return true;
+}
+
+bool SceneParser::loadURDF(const std::string& urdf_str) {
+	if (!model_.initString(urdf_str)) {
+		ROS_ERROR("Failed to load URDF from string");
 		return false;
 	}
 	return true;
