@@ -22,20 +22,20 @@
   </xacro:macro>
 
   <!-- Add subframes for mesh -->
-  <xacro:macro name="loopmeshsubframes" params="current:=0 max:=^ node:=^ name:=^">
+  <xacro:macro name="loopmeshsubframes" params="current:=0 max:=^ node:=^ sorted_keys:=^ name:=^">
     <xacro:if value="${max > current}">
       <xacro:property name="xyz" value="0 0 0" />
       <xacro:property name="rpy" value="0 0 0" />
 
-      <xacro:if value="${'xyz' in node[current]}">
-        <xacro:property name="xyz" value="${node[current]['xyz'][0]} ${node[current]['xyz'][1]} ${node[current]['xyz'][2]}" />
+      <xacro:if value="${'xyz' in node[sorted_keys[current]]}">
+        <xacro:property name="xyz" value="${node[sorted_keys[current]]['xyz'][0]} ${node[sorted_keys[current]]['xyz'][1]} ${node[sorted_keys[current]]['xyz'][2]}" />
       </xacro:if>>
-      <xacro:if value="${'rpy' in node[current]}">
-        <xacro:property name="rpy" value="${node[current]['rpy'][0]} ${node[current]['rpy'][1]} ${node[current]['rpy'][2]}" />
+      <xacro:if value="${'rpy' in node[sorted_keys[current]]}">
+        <xacro:property name="rpy" value="${node[sorted_keys[current]]['rpy'][0]} ${node[sorted_keys[current]]['rpy'][1]} ${node[sorted_keys[current]]['rpy'][2]}" />
       </xacro:if>>
 
       <xacro:subframe name="${name}"
-                      subframe="${node[current]['name']}"
+                      subframe="${sorted_keys[current]}"
                       frame_id="${name}"
                       xyz="${xyz}" rpy="${rpy}" />
 
@@ -57,7 +57,7 @@
     </xacro:tf>
 
     <xacro:if value="${subframes}">
-      <xacro:loopmeshsubframes max="${len(subframes)}" node="${subframes}"/>
+      <xacro:loopmeshsubframes max="${len(subframes)}" node="${subframes}" sorted_keys="${sorted(subframes)}"/>
     </xacro:if>
 
   </xacro:macro>
