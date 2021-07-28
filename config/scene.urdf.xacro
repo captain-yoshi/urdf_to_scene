@@ -1,25 +1,28 @@
 <?xml version="1.0" ?>
 <robot name="scene" xmlns:xacro="http://www.ros.org/wiki/xacro">
+
   <xacro:include filename="$(find scene_parser)/config/utils.xacro" />
   <xacro:include filename="$(find scene_parser)/config/shelf.urdf.xacro" />
+  <!-- Import object metadata -->
+  <xacro:include filename="$(find scene_parser)/mesh/metadata.xacro" />
 
   <link name="world" />
 
   <!-- Create default shelf -->
+  <!-- Subframes are automatically created -->
   <xacro:shelf name="bookshelf"
                frame_id="world"
                xyz="0.8 0 0"/>
 
-  <!-- Add cube on book-shelf level-1 -->
+  <!-- Add cube on bookshelf board1 -->
   <xacro:framebox name="box"
-             frame_id="bookshelf_board1"
-             xyz="0 0 0"
-             dimensions="0.03 0.03 0.03"/>
+                  frame_id="bookshelf_board1"
+                  xyz="0 0 0"
+                  dimensions="0.03 0.03 0.03"/>
 
-  <!-- Add can on book-shelf level-2 -->
+  <!-- Add can on bookshelf board5 -->
   <xacro:framemesh name="can"
-              frame_id="bookshelf_board5"
-              scale="0.01 0.01 0.01"
-              resource="package://scene_parser/mesh/can.stl"/>
+                   frame_id="bookshelf_board5"
+                   metadata="${can}"/>
 
 </robot>

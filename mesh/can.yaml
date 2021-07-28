@@ -1,0 +1,6 @@
+can:
+  resource: "package://scene_parser/mesh/can_4k.stl"  # Mesh path for different resolutions
+  bb:                                                 # Bounding box wrt. mesh origin
+    - 0.004956  # x
+    - 004986    # y
+    - 004986    # z

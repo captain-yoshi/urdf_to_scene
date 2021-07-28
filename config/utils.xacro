@@ -32,7 +32,7 @@
       </xacro:if>>
       <xacro:if value="${'rpy' in node[sorted_keys[current]]}">
         <xacro:property name="rpy" value="${node[sorted_keys[current]]['rpy'][0]} ${node[sorted_keys[current]]['rpy'][1]} ${node[sorted_keys[current]]['rpy'][2]}" />
-      </xacro:if>>
+      </xacro:if>
 
       <xacro:subframe name="${name}"
                       subframe="${sorted_keys[current]}"
@@ -44,11 +44,11 @@
   </xacro:macro>
 
   <!-- Add mesh -->
-  <xacro:macro name="framemesh" params="name frame_id resource xyz:='0 0 0' subframes:=false  rpy:='0 0 0' scale:='1.0 1.0 1.0'">
+  <xacro:macro name="framemesh" params="name frame_id metadata xyz:='0 0 0' rpy:='0 0 0' scale:='1.0 1.0 1.0'">
     <link name="${name}">
       <collision>
         <geometry>
-          <mesh filename="${resource}" scale="${scale}" />
+          <mesh filename="${metadata['resource']}" scale="${scale}" />
         </geometry>
       </collision>
     </link>
@@ -56,8 +56,8 @@
       <origin xyz="${xyz}" rpy="${rpy}"/>
     </xacro:tf>
 
-    <xacro:if value="${subframes}">
-      <xacro:loopmeshsubframes max="${len(subframes)}" node="${subframes}" sorted_keys="${sorted(subframes)}"/>
+    <xacro:if value="${'subframes' in metadata}">
+      <xacro:loopmeshsubframes max="${len(metadata['subframes'])}" node="${metadata['subframes']}" sorted_keys="${sorted(metadata['subframes'])}"/>
     </xacro:if>
 
   </xacro:macro>
