@@ -47,6 +47,9 @@
 #include <shape_msgs/SolidPrimitive.h>
 
 bool SceneParser::loadURDF(ros::NodeHandle& nh, const std::string& param_name) {
+	model_.clear();
+	scene_ = moveit_msgs::PlanningScene();
+
 	if (!model_.initParamWithNodeHandle(param_name, nh)) {
 		ROS_ERROR("Failed to load URDF from param server : %s", param_name.c_str());
 		return false;
@@ -55,6 +58,9 @@ bool SceneParser::loadURDF(ros::NodeHandle& nh, const std::string& param_name) {
 }
 
 bool SceneParser::loadURDF(const std::string& urdf_str) {
+	model_.clear();
+	scene_ = moveit_msgs::PlanningScene();
+
 	if (!model_.initString(urdf_str)) {
 		ROS_ERROR("Failed to load URDF from string");
 		return false;
