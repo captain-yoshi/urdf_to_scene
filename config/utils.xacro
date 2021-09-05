@@ -22,8 +22,8 @@
   </xacro:macro>
 
   <!-- Add subframes for mesh -->
-  <xacro:macro name="loopmeshsubframes" params="current:=0 max:=^ node:=^ sorted_keys:=^ name:=^">
-    <xacro:if value="${max > current}">
+  <xacro:macro name="loopmeshsubframes" params="current:=0 until:=^ node:=^ sorted_keys:=^ name:=^">
+    <xacro:if value="${until > current}">
       <xacro:property name="xyz" value="0 0 0" />
       <xacro:property name="rpy" value="0 0 0" />
 
@@ -57,7 +57,7 @@
     </xacro:tf>
 
     <xacro:if value="${'subframes' in metadata}">
-      <xacro:loopmeshsubframes max="${len(metadata['subframes'])}" node="${metadata['subframes']}" sorted_keys="${sorted(metadata['subframes'])}"/>
+      <xacro:loopmeshsubframes until="${len(metadata['subframes'])}" node="${metadata['subframes']}" sorted_keys="${sorted(metadata['subframes'])}"/>
     </xacro:if>
 
   </xacro:macro>
