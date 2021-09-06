@@ -52,8 +52,8 @@
                   xyz="0 ${dim_y/2 - v_board_thickness/2} 0"/>
   
   <!-- Vertical inside boards -->
-  <xacro:macro name="loopvboard" params="current:=0 max:=^">
-    <xacro:if value="${max > current}">
+  <xacro:macro name="loopvboard" params="current:=0 until:=^">
+    <xacro:if value="${until > current}">
       <xacro:framebox name="${root}${dl}vboard${current+2}"
                       frame_id="${root}${dl}vboard1/bottom"
                       dimensions="${vboard_dimensions}"
@@ -62,11 +62,11 @@
     </xacro:if>
   </xacro:macro>
 
-  <xacro:loopvboard max="${v_boards}"/>
+  <xacro:loopvboard until="${v_boards}"/>
 
   <!-- Horizontal boards -->
-  <xacro:macro name="loophboard" params="current:=0 index:=^ max:=^">
-    <xacro:if value="${max > current}">
+  <xacro:macro name="loophboard" params="current:=0 index:=^ until:=^">
+    <xacro:if value="${until > current}">
       <xacro:framebox name="${root}${dl}board${index*h_boards+current+1}"
                  frame_id="${root}${dl}vboard${index+1}/bottom"
                  dimensions="${hboard_dimensions}"
@@ -75,14 +75,14 @@
     </xacro:if>
   </xacro:macro>
 
-  <xacro:macro name="loophrowboard" params="current:=0 max:=^">
-    <xacro:if value="${max > current}">
-      <xacro:loophboard index="${current}" max="${h_boards}"/>
+  <xacro:macro name="loophrowboard" params="current:=0 until:=^">
+    <xacro:if value="${until > current}">
+      <xacro:loophboard index="${current}" until="${h_boards}"/>
       <xacro:loophrowboard current="${current+1}"/>
     </xacro:if>
   </xacro:macro>
 
-  <xacro:loophrowboard max="${v_boards + 1}"/>
+  <xacro:loophrowboard until="${v_boards + 1}"/>
 
   <!-- Back board -->
   <xacro:if value="${back_board}">
