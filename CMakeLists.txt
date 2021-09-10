@@ -7,7 +7,6 @@ find_package(catkin REQUIRED COMPONENTS
 	geometric_shapes
 	geometry_msgs
 	moveit_core
-	moveit_ros_benchmarks
 	moveit_ros_planning
 	moveit_ros_planning_interface
 	moveit_visual_tools
@@ -26,7 +25,6 @@ catkin_package(
 		geometric_shapes
 		geometry_msgs
 		moveit_core
-		moveit_ros_benchmarks
 		moveit_ros_planning
 		moveit_ros_planning_interface
 		moveit_visual_tools
