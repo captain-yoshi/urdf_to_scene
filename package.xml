@@ -1,5 +1,5 @@
 <package format="2">
-	<name>scene_parser</name>
+	<name>urdf_to_scene</name>
 	<version>0.0.0</version>
 	<description>Create MoveIt CollisionObjects from URDF</description>
 

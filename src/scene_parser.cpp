@@ -36,7 +36,7 @@
    Desc:
 */
 
-#include <scene_parser/scene_parser.h>
+#include <urdf_to_scene/scene_parser.h>
 
 #include <eigen_conversions/eigen_msg.h>
 

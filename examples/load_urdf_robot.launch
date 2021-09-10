@@ -7,6 +7,6 @@
   <param name="scene_urdf" textfile="$(find moveit_resources_fanuc_description)/urdf/fanuc.urdf"/>
 
   <!-- Launch node -->
-  <node name="load_urdf" pkg="scene_parser" type="load_urdf" output="screen" required="true" launch-prefix="$(arg launch_prefix)"/>
+  <node name="load_urdf" pkg="urdf_to_scene" type="load_urdf" output="screen" required="true" launch-prefix="$(arg launch_prefix)"/>
 
 </launch>

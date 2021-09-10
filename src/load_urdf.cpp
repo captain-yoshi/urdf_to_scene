@@ -40,10 +40,10 @@
 
 #include <moveit/planning_scene_interface/planning_scene_interface.h>
 
-#include <scene_parser/scene_parser.h>
+#include <urdf_to_scene/scene_parser.h>
 
 int main(int argc, char** argv) {
-	ros::init(argc, argv, "scene_parser");
+	ros::init(argc, argv, "urdf_to_scene");
 	ros::AsyncSpinner spinner(1);
 	spinner.start();
 
