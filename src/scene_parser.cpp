@@ -189,6 +189,7 @@ void SceneParser::parseCollisionGeometry(const urdf::LinkConstSharedPtr& link, c
 		                          parent_to_collision_tf, frame_id, scaling);
 	} else {
 		ROS_ERROR("Collision geometry type not supported");
+		scene_.world.collision_objects.pop_back();
 	}
 }
 
