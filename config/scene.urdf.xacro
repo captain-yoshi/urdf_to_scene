@@ -3,48 +3,26 @@
 
   <xacro:include filename="$(find urdf_to_scene)/config/utils.xacro" />
   <xacro:include filename="$(find urdf_to_scene)/config/shelf.urdf.xacro" />
-  <!-- Import object metadata -->
-  <xacro:include filename="$(find urdf_to_scene)/mesh/metadata.xacro" />
 
   <link name="world" />
 
-  <!-- Create default shelf -->
-  <!-- Subframes are automatically created -->
-  <xacro:shelf name="bookshelf"
-               frame_id="world"
-               xyz="0.8 0 0"/>
 
-  <!-- Add cube on bookshelf board1 -->
-  <xacro:framebox name="box"
-                  frame_id="bookshelf_board1"
-                  xyz="0 0 0"
-                  dimensions="0.03 0.03 0.03"/>
+  <xacro:macro name="loop" params="items:=^">
+    <xacro:if value="${items}">
+      <!-- pop first item from list -->
+      <xacro:property name="item" value="${items.pop(0)}"/>
 
-  <!-- Add can on bookshelf board5 -->
-  <xacro:framemesh name="can"
-                   frame_id="bookshelf_board5"
-                   metadata="${can}"/>
-
-
-
- <xacro:macro name="loop" params="items:=^">
-		<xacro:if value="${items}">
-			<!-- pop first item from list -->
-			<xacro:property name="item" value="${items.pop(0)}"/>
-
-      <!-- create multiple book shelves primitives -->
+      <!-- create multiple bookshelves (which is a collection of primitives) -->
       <xacro:shelf name="bookshelf${item}"
                    frame_id="world"
                    xyz="0.8 0 ${item}"/>
 
-			<!-- recursively call myself -->
-			<xacro:loop/>
-		</xacro:if>
-	</xacro:macro>
-	<xacro:loop items="${[1,2,3,4,5,6,7,8,9,10]}"/>
-
+      <!-- recursively call myself -->
+      <xacro:loop/>
   
-
-
+    </xacro:if>
+  </xacro:macro>
   
+  <xacro:loop items="${[1,2,3,4,5,6,7,8,9,10]}"/>
+
 </robot>
