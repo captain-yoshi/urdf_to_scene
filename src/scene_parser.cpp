@@ -78,6 +78,10 @@ const moveit_msgs::PlanningScene& SceneParser::getPlanningScene() {
 	return scene_;
 }
 
+const std::map<std::string, std::string>& SceneParser::getMeshResourceMap() {
+	return mesh_resource_map_;
+}
+
 void SceneParser::parseURDFmodel() {
 	auto root_link = model_.getRoot();
 
@@ -228,6 +232,9 @@ void SceneParser::createCollisionObjectMesh(moveit_msgs::CollisionObject& collis
 	geometry_msgs::PoseStamped pose_stamped;
 	tf::poseEigenToMsg(frame, pose_stamped.pose);
 	pose_stamped.header.frame_id = frame_id;
+
+	// Store mesh resource internally
+	mesh_resource_map_.insert({ object_id, mesh_path });
 
 	shapes::Shape* shape = shapes::createMeshFromResource(mesh_path, scaling);
 	shapes::ShapeMsg shape_msg;

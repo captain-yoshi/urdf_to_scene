@@ -52,6 +52,7 @@ public:
 
 	void getCollisionObjects(std::vector<moveit_msgs::CollisionObject>& collision_objects);
 	const moveit_msgs::PlanningScene& getPlanningScene();
+	const std::map<std::string, std::string>& getMeshResourceMap();
 
 	void printTF(const std::string& tf_name, const Eigen::Isometry3d& tf);
 
@@ -73,4 +74,6 @@ private:
 	std::string urdf_;
 	urdf::Model model_;
 	moveit_msgs::PlanningScene scene_;
+
+	std::map<std::string, std::string> mesh_resource_map_;  // {COLLISION_OBJECT_ID, MESH_FILENAME}
 };
