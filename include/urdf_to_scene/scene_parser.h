@@ -50,13 +50,16 @@ public:
 	bool loadURDF(ros::NodeHandle& nh, const std::string& param_name);
 	bool loadURDF(const std::string& urdf_str);
 
+	/// load urdf first
+	void parseURDF();
+
+	/// retrieve data
 	const moveit_msgs::PlanningScene& getPlanningScene();
 	const std::map<std::string, std::string>& getMeshResourceMap();
 
 	void printTF(const std::string& tf_name, const Eigen::Isometry3d& tf);
 
 private:
-	void parseURDFmodel();
 	void parseLink(const urdf::LinkConstSharedPtr& rchild_link, const Eigen::Isometry3d& offset,
 	               std::map<std::string, std::string>& dummy_link_names);
 	void parseCollisionGeometry(const urdf::LinkConstSharedPtr& link, const std::string& frame_id,
@@ -70,8 +73,8 @@ private:
 	                               const std::string& mesh_path, const Eigen::Isometry3d& frame,
 	                               const std::string& frame_id, const Eigen::Vector3d& scaling);
 
-	std::string urdf_;
 	urdf::Model model_;
+	tinyxml2::XMLDocument xml_;
 	moveit_msgs::PlanningScene scene_;
 
 	std::map<std::string, std::string> mesh_resource_map_;  // {COLLISION_OBJECT_ID, MESH_FILENAME}

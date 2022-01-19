@@ -46,30 +46,37 @@
 #include <geometric_shapes/shape_extents.h>
 #include <shape_msgs/SolidPrimitive.h>
 
-bool SceneParser::loadURDF(ros::NodeHandle& nh, const std::string& param_name) {
-	model_.clear();
-	scene_ = moveit_msgs::PlanningScene();
 
-	if (!model_.initParamWithNodeHandle(param_name, nh)) {
+bool SceneParser::loadURDF(ros::NodeHandle& nh, const std::string& param_name) {
+	std::string urdf_str;
+	if (!nh.getParam(param_name, urdf_str)) {
 		ROS_ERROR("Failed to load URDF from param server : %s", param_name.c_str());
 		return false;
 	}
-	return true;
+
+	return loadURDF(urdf_str);
 }
 
 bool SceneParser::loadURDF(const std::string& urdf_str) {
+	xml_.Clear();
+	tinyxml2::XMLError ec = xml_.Parse(urdf_str.c_str());
+
+	if (ec != tinyxml2::XMLError::XML_SUCCESS) {
+		xml_.PrintError();
+		return false;
+	}
+
 	model_.clear();
 	scene_ = moveit_msgs::PlanningScene();
 
-	if (!model_.initString(urdf_str)) {
-		ROS_ERROR("Failed to load URDF from string");
+	if (!model_.initXml(&xml_)) {
+		ROS_ERROR("Failed to load URDF from XML document");
 		return false;
 	}
 	return true;
 }
 
 const moveit_msgs::PlanningScene& SceneParser::getPlanningScene() {
-	parseURDFmodel();
 	return scene_;
 }
 
@@ -77,10 +84,14 @@ const std::map<std::string, std::string>& SceneParser::getMeshResourceMap() {
 	return mesh_resource_map_;
 }
 
-void SceneParser::parseURDFmodel() {
-	auto root_link = model_.getRoot();
+void SceneParser::parseURDF() {
+	if (!model_.getRoot()) {
+		ROS_WARN("A valid URDF must be loaded before parsing");
+		return;
+	}
 
-	// Parse collision geomtery
+	// Parse root link
+	auto root_link = model_.getRoot();
 	if (root_link->collision) {
 		Eigen::Isometry3d link_to_collision_tf = Eigen::Isometry3d::Identity();
 		urdfPoseToEigenIsometry(root_link->collision->origin, link_to_collision_tf);

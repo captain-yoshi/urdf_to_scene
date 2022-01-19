@@ -65,6 +65,8 @@ int main(int argc, char** argv) {
 	// Parse URDF into a planning scene
 	SceneParser parser;
 	parser.loadURDF(nh, "/scene_urdf");
+	parser.parseURDF();
+
 	const auto& ps = parser.getPlanningScene();
 
 	// Add collision objects to the planning scene
