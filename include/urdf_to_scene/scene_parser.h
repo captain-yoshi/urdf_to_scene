@@ -60,6 +60,7 @@ public:
 	void printTF(const std::string& tf_name, const Eigen::Isometry3d& tf);
 
 private:
+	void parseFixedFrameTransforms();
 	void parseLink(const urdf::LinkConstSharedPtr& rchild_link, const Eigen::Isometry3d& offset,
 	               std::map<std::string, std::string>& dummy_link_names);
 	void parseCollisionGeometry(const urdf::LinkConstSharedPtr& link, const std::string& frame_id,

@@ -46,6 +46,35 @@
 #include <geometric_shapes/shape_extents.h>
 #include <shape_msgs/SolidPrimitive.h>
 
+namespace {
+
+bool parsePose(urdf::Pose& pose, tinyxml2::XMLElement* xml) {
+	pose.clear();
+	if (xml) {
+		const char* xyz_str = xml->Attribute("xyz");
+		if (xyz_str != NULL) {
+			try {
+				pose.position.init(xyz_str);
+			} catch (urdf::ParseError& e) {
+				ROS_DEBUG_STREAM(e.what());
+				return false;
+			}
+		}
+
+		const char* rpy_str = xml->Attribute("rpy");
+		if (rpy_str != NULL) {
+			try {
+				pose.rotation.init(rpy_str);
+			} catch (urdf::ParseError& e) {
+				ROS_DEBUG_STREAM(e.what());
+				return false;
+			}
+		}
+	}
+	return true;
+}
+
+}  // namespace
 
 bool SceneParser::loadURDF(ros::NodeHandle& nh, const std::string& param_name) {
 	std::string urdf_str;
@@ -90,6 +119,9 @@ void SceneParser::parseURDF() {
 		return;
 	}
 
+	// Parse custom elements
+	parseFixedFrameTransforms();
+
 	// Parse root link
 	auto root_link = model_.getRoot();
 	if (root_link->collision) {
@@ -105,6 +137,37 @@ void SceneParser::parseURDF() {
 		std::map<std::string, std::string> dummy_to_parent_map;
 
 		parseLink(link, offset, dummy_to_parent_map);
+	}
+}
+
+void SceneParser::parseFixedFrameTransforms() {
+	// Custom element not parsed by urdf
+	tinyxml2::XMLElement* node = xml_.FirstChildElement("robot")->FirstChildElement("planning_fft");
+
+	while (node) {
+		urdf::Pose pose;
+
+		const char* id = node->Attribute("name");
+		const char* frame_id = node->Attribute("parent");
+		if (id != NULL && frame_id != NULL && parsePose(pose, node)) {
+			geometry_msgs::TransformStamped ts;
+
+			ts.header.frame_id = frame_id;
+			ts.child_frame_id = id;
+			ts.transform.translation.x = pose.position.x;
+			ts.transform.translation.y = pose.position.y;
+			ts.transform.translation.z = pose.position.z;
+			ts.transform.rotation.w = pose.rotation.w;
+			ts.transform.rotation.x = pose.rotation.x;
+			ts.transform.rotation.y = pose.rotation.y;
+			ts.transform.rotation.z = pose.rotation.z;
+
+			scene_.fixed_frame_transforms.emplace_back(ts);
+
+		} else
+			ROS_WARN("Element 'planning_fft' MUST have attribute 'name' and 'parent' and optionnal 'xyz' and 'rpy'");
+
+		node = node->NextSiblingElement("planning_fft");
 	}
 }
 
