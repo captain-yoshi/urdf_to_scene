@@ -50,7 +50,6 @@ public:
 	bool loadURDF(ros::NodeHandle& nh, const std::string& param_name);
 	bool loadURDF(const std::string& urdf_str);
 
-	void getCollisionObjects(std::vector<moveit_msgs::CollisionObject>& collision_objects);
 	const moveit_msgs::PlanningScene& getPlanningScene();
 	const std::map<std::string, std::string>& getMeshResourceMap();
 
