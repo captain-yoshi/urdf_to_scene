@@ -46,6 +46,8 @@
 #include <geometric_shapes/shape_extents.h>
 #include <shape_msgs/SolidPrimitive.h>
 
+#include <moveit/version.h>
+
 namespace {
 
 bool parsePose(urdf::Pose& pose, tinyxml2::XMLElement* xml) {
@@ -291,7 +293,13 @@ void SceneParser::createCollisionObjectPrimitive(moveit_msgs::CollisionObject& c
 	collision_object.primitives.resize(1);
 	collision_object.primitives[0] = primitive;
 	collision_object.primitive_poses.resize(1);
-	collision_object.primitive_poses[0] = pose_stamped.pose;
+
+#if MOVEIT_VERSION >= MOVEIT_VERSION_CHECK(1, 1, 6)
+	collision_object.pose = pose_stamped.pose;
+	collision_object.primitive_poses[0].orientation.w = 1;
+#else
+	collision_object.mesh_poses[0] = pose_stamped.pose;
+#endif
 }
 
 void SceneParser::createCollisionObjectMesh(moveit_msgs::CollisionObject& collision_object,
@@ -315,7 +323,13 @@ void SceneParser::createCollisionObjectMesh(moveit_msgs::CollisionObject& collis
 	collision_object.meshes.resize(1);
 	collision_object.meshes[0] = boost::get<shape_msgs::Mesh>(shape_msg);
 	collision_object.mesh_poses.resize(1);
+
+#if MOVEIT_VERSION >= MOVEIT_VERSION_CHECK(1, 1, 6)
+	collision_object.pose = pose_stamped.pose;
+	collision_object.mesh_poses[0].orientation.w = 1;
+#else
 	collision_object.mesh_poses[0] = pose_stamped.pose;
+#endif
 }
 
 void SceneParser::printTF(const std::string& tf_name, const Eigen::Isometry3d& tf) {
