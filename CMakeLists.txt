@@ -9,7 +9,6 @@ find_package(catkin REQUIRED COMPONENTS
 	moveit_core
 	moveit_ros_planning
 	moveit_ros_planning_interface
-	moveit_visual_tools
 	roscpp
 	urdf
 	visualization_msgs
@@ -27,7 +26,6 @@ catkin_package(
 		moveit_core
 		moveit_ros_planning
 		moveit_ros_planning_interface
-		moveit_visual_tools
 		roscpp
 		urdf
 		visualization_msgs
