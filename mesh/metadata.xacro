@@ -3,6 +3,6 @@
 
   <!-- Load metadata of all meshes -->
   <xacro:property name="pkg_path"   value="$(find urdf_to_scene)/mesh/"/>
-  <xacro:property name="can"   value="${load_yaml(pkg_path + 'can.yaml')['can']}"/>
+  <xacro:property name="can"   value="${xacro.load_yaml(pkg_path + 'can.yaml')['can']}"/>
 
 </robot>
