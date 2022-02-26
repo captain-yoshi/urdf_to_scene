@@ -1,28 +1,39 @@
 <?xml version="1.0" ?>
 <robot name="scene" xmlns:xacro="http://www.ros.org/wiki/xacro">
-
   <xacro:include filename="$(find urdf_to_scene)/xacro/planning_scene.xacro" />
   <xacro:include filename="$(find urdf_to_scene)/xacro/collision_objects/shelf.urdf.xacro" />
-  <!-- Import object metadata -->
   <xacro:include filename="$(find urdf_to_scene)/mesh/metadata.xacro" />
 
-  <link name="world" />
+  <!-- Planning frame
+       1- Add a virtual frame, a static transform broadcaster must be supplied:
+           <link name="world"/>
+       2- Add the robot base link directly, e.g. for the panda:
+           <link name="panda_link0"/>
+       3- Use the xacro macro 'planning_fft' which will fill the PlanningScene 'fixed_frame_transforms':
+           <planning_fft name="panda_link0" parent="world" xyz="0 0 0"/>
+  -->
+  <link name="world"/>
+
+  <!-- Add the static transfrom manually -->
+  <planning_fft name="panda_link0"
+                parent="world"
+                xyz="0 0 0"/>
 
   <!-- Create default shelf -->
-  <!-- Subframes are automatically created -->
   <xacro:shelf name="bookshelf"
                frame_id="world"
-               xyz="0.8 0 0"/>
+               xyz="0.8 0 0"
+               h_board_thickness="0.02"/>
 
   <!-- Add cube on bookshelf board1 -->
-  <xacro:framebox name="box"
-                  frame_id="bookshelf_board1"
-                  xyz="0 0 0"
-                  dimensions="0.03 0.03 0.03"/>
+  <xacro:collision_box name="box"
+                       frame_id="bookshelf_board1/top"
+                       xyz="0 0 ${0.05/2}"
+                       dimensions="0.05 0.05 0.05"/>
 
   <!-- Add can on bookshelf board5 -->
-  <xacro:framemesh name="can"
-                   frame_id="bookshelf_board5"
-                   metadata="${can}"/>
+  <xacro:collision_mesh name="can"
+                        frame_id="bookshelf_board5/top"
+                        resource="${can.resource}"/>
 
 </robot>
