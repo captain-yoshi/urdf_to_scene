@@ -46,7 +46,7 @@
 #include <geometric_shapes/shape_extents.h>
 #include <shape_msgs/SolidPrimitive.h>
 
-#include <moveit/version.h>
+#include <urdf_to_scene/moveit_compatibility.h>
 
 namespace {
 
@@ -294,7 +294,7 @@ void SceneParser::createCollisionObjectPrimitive(moveit_msgs::CollisionObject& c
 	collision_object.primitives[0] = primitive;
 	collision_object.primitive_poses.resize(1);
 
-#if MOVEIT_VERSION >= MOVEIT_VERSION_CHECK(1, 1, 6)
+#if MOVEIT_HAS_OBJECT_POSE
 	collision_object.pose = pose_stamped.pose;
 	collision_object.primitive_poses[0].orientation.w = 1;
 #else
@@ -324,7 +324,7 @@ void SceneParser::createCollisionObjectMesh(moveit_msgs::CollisionObject& collis
 	collision_object.meshes[0] = boost::get<shape_msgs::Mesh>(shape_msg);
 	collision_object.mesh_poses.resize(1);
 
-#if MOVEIT_VERSION >= MOVEIT_VERSION_CHECK(1, 1, 6)
+#if MOVEIT_HAS_OBJECT_POSE
 	collision_object.pose = pose_stamped.pose;
 	collision_object.mesh_poses[0].orientation.w = 1;
 #else
