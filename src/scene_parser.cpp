@@ -298,7 +298,7 @@ void SceneParser::createCollisionObjectPrimitive(moveit_msgs::CollisionObject& c
 	collision_object.pose = pose_stamped.pose;
 	collision_object.primitive_poses[0].orientation.w = 1;
 #else
-	collision_object.mesh_poses[0] = pose_stamped.pose;
+	collision_object.primitive_poses[0] = pose_stamped.pose;
 #endif
 }
 
