@@ -36,6 +36,10 @@
    Desc:
 */
 
+/* Author: Shi Shenglei 
+   Desc: Fix memory leak bug in createCollisionObjectMesh function 
+*/
+
 #include <urdf_to_scene/scene_parser.h>
 
 #include <eigen_conversions/eigen_msg.h>
@@ -316,7 +320,7 @@ void SceneParser::createCollisionObjectMesh(moveit_msgs::CollisionObject& collis
 	shapes::Shape* shape = shapes::createMeshFromResource(mesh_path, scaling);
 	shapes::ShapeMsg shape_msg;
 	shapes::constructMsgFromShape(shape, shape_msg);
-
+    delete shape;
 	collision_object.id = object_id;
 	collision_object.header = pose_stamped.header;
 	collision_object.operation = moveit_msgs::CollisionObject::ADD;
