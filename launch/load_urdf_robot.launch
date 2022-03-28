@@ -1,7 +1,10 @@
+<?xml version="1.0"?>
 <launch>
 
   <!-- By default, we are not in debug mode -->
-  <arg name="launch_prefix" default=""/>
+  <arg name="debug" default="false" />
+  <arg unless="$(arg debug)" name="launch_prefix" value="" />
+  <arg     if="$(arg debug)" name="launch_prefix" value="gdb --args" />
 
   <!-- Load xacro robot -->
   <param name="scene_urdf" textfile="$(find moveit_resources_fanuc_description)/urdf/fanuc.urdf"/>

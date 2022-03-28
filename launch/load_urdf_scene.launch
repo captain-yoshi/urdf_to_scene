@@ -1,7 +1,10 @@
+<?xml version="1.0"?>
 <launch>
 
   <!-- By default, we are not in debug mode -->
-  <arg name="launch_prefix" default=""/>
+  <arg name="debug" default="false" />
+  <arg unless="$(arg debug)" name="launch_prefix" value="" />
+  <arg     if="$(arg debug)" name="launch_prefix" value="gdb --args" />
 
   <!-- Load xacro scene -->
   <param name="scene_urdf" command="$(find xacro)/xacro '$(find urdf_to_scene)/examples/scene.urdf.xacro'"/>
