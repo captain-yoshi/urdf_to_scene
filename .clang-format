@@ -1,65 +1,75 @@
 ---
-Language:      Cpp
 BasedOnStyle:  Google
-AccessModifierOffset: -3
-AlignAfterOpenBracket: Align
-AlignEscapedNewlinesLeft: true
-AlignTrailingComments: false
-AllowAllParametersOfDeclarationOnNextLine: false
-AllowShortFunctionsOnASingleLine: Inline
-AllowShortIfStatementsOnASingleLine: false
-AllowShortLoopsOnASingleLine: false
-AlwaysBreakBeforeMultilineStrings: false
-AlwaysBreakTemplateDeclarations: true
-BinPackArguments: true
-BinPackParameters: true
-BraceWrapping:
-  AfterClass: true
-  AfterControlStatement: false
-  AfterEnum: true
-  AfterFunction: false
-  AfterNamespace: false
-  AfterStruct: true
-  AfterUnion: true
-  BeforeCatch: false
-  BeforeElse: false
-  IndentBraces: false
-  SplitEmptyRecord: false
-BreakBeforeBinaryOperators: None
-BreakBeforeBraces: Custom
-BreakBeforeTernaryOperators: false
-BreakConstructorInitializersBeforeComma: true
-ColumnLimit: 120
-ConstructorInitializerAllOnOneLineOrOnePerLine: true
+ColumnLimit:    120
+MaxEmptyLinesToKeep: 1
+SortIncludes: false
+
+Standard:        Auto
+IndentWidth:     4
+TabWidth:        4
+UseTab:          Never
+AccessModifierOffset: -4
 ConstructorInitializerIndentWidth: 2
+NamespaceIndentation: None
 ContinuationIndentWidth: 4
-Cpp11BracedListStyle: false
-DerivePointerBinding: false
-ExperimentalAutoDetectBinPacking: false
 IndentCaseLabels: true
 IndentFunctionDeclarationAfterType: false
-IndentWidth: 3
-MaxEmptyLinesToKeep: 1
-NamespaceIndentation: None
+
+AlignEscapedNewlinesLeft: false
+AlignTrailingComments: true
+
+AllowAllParametersOfDeclarationOnNextLine: false
+ExperimentalAutoDetectBinPacking: false
 ObjCSpaceBeforeProtocolList: true
-PenaltyBreakBeforeFirstCallParameter: 19
-PenaltyBreakComment: 60
-PenaltyBreakFirstLessLess: 1000
-PenaltyBreakString: 100
-PenaltyExcessCharacter: 1000
-PenaltyReturnTypeOnItsOwnLine: 70
+Cpp11BracedListStyle: false
+
+AllowShortBlocksOnASingleLine: true
+AllowShortIfStatementsOnASingleLine: false
+AllowShortLoopsOnASingleLine: false
+AllowShortFunctionsOnASingleLine: None
+AllowShortCaseLabelsOnASingleLine: false
+
+AlwaysBreakTemplateDeclarations: true
+AlwaysBreakBeforeMultilineStrings: false
+BreakBeforeBinaryOperators: false
+BreakBeforeTernaryOperators: false
+BreakConstructorInitializersBeforeComma: true
+
+BinPackParameters: true
+ConstructorInitializerAllOnOneLineOrOnePerLine: true
+DerivePointerBinding: false
 PointerBindsToType: true
-SortIncludes: false
-SpaceAfterCStyleCast: false
-SpaceAfterControlStatementKeyword: false
-SpaceBeforeAssignmentOperators: true
-SpaceBeforeParens: ControlStatements
-SpaceInEmptyParentheses: false
+
+PenaltyExcessCharacter: 50
+PenaltyBreakBeforeFirstCallParameter: 30
+PenaltyBreakComment: 1000
+PenaltyBreakFirstLessLess: 10
+PenaltyBreakString: 100
+PenaltyReturnTypeOnItsOwnLine: 50
+
 SpacesBeforeTrailingComments: 2
-SpacesInAngles: false
-SpacesInCStyleCastParentheses: false
 SpacesInParentheses: false
-Standard: Auto
-TabWidth: 3
-UseTab: ForIndentation
+SpacesInAngles:  false
+SpaceInEmptyParentheses: false
+SpacesInCStyleCastParentheses: false
+SpaceAfterCStyleCast: false
+SpaceAfterControlStatementKeyword: true
+SpaceBeforeAssignmentOperators: true
+
+# Configure each individual brace in BraceWrapping
+BreakBeforeBraces: Custom
+
+# Control of individual brace wrapping cases
+BraceWrapping:
+    AfterCaseLabel: true
+    AfterClass: true
+    AfterControlStatement: false
+    AfterEnum: true
+    AfterFunction: false
+    AfterNamespace: false
+    AfterStruct: true
+    AfterUnion: true
+    BeforeCatch: false
+    BeforeElse: false
+    IndentBraces: false
 ...

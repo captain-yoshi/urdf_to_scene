@@ -43,36 +43,36 @@
 #include <urdf_to_scene/scene_parser.h>
 
 int main(int argc, char** argv) {
-	ros::init(argc, argv, "urdf_to_scene");
-	ros::AsyncSpinner spinner(1);
-	spinner.start();
+    ros::init(argc, argv, "urdf_to_scene");
+    ros::AsyncSpinner spinner(1);
+    spinner.start();
 
-	ros::NodeHandle nh("~");
+    ros::NodeHandle nh("~");
 
-	// Remove all scene objects
-	moveit::planning_interface::PlanningSceneInterface psi;
-	{
-		moveit_msgs::PlanningScene rm;
-		rm.is_diff = true;
-		rm.robot_state.is_diff = true;
-		rm.robot_state.attached_collision_objects.resize(1);
-		rm.robot_state.attached_collision_objects[0].object.operation = moveit_msgs::CollisionObject::REMOVE;
-		rm.world.collision_objects.resize(1);
-		rm.world.collision_objects[0].operation = moveit_msgs::CollisionObject::REMOVE;
-		psi.applyPlanningScene(rm);
-	}
+    // Remove all scene objects
+    moveit::planning_interface::PlanningSceneInterface psi;
+    {
+        moveit_msgs::PlanningScene rm;
+        rm.is_diff = true;
+        rm.robot_state.is_diff = true;
+        rm.robot_state.attached_collision_objects.resize(1);
+        rm.robot_state.attached_collision_objects[0].object.operation = moveit_msgs::CollisionObject::REMOVE;
+        rm.world.collision_objects.resize(1);
+        rm.world.collision_objects[0].operation = moveit_msgs::CollisionObject::REMOVE;
+        psi.applyPlanningScene(rm);
+    }
 
-	// Parse URDF into a planning scene
-	SceneParser parser;
-	parser.loadURDF(nh, "/scene_urdf");
-	parser.parseURDF();
+    // Parse URDF into a planning scene
+    SceneParser parser;
+    parser.loadURDF(nh, "/scene_urdf");
+    parser.parseURDF();
 
-	const auto& ps = parser.getPlanningScene();
+    const auto& ps = parser.getPlanningScene();
 
-	// Add collision objects to the planning scene
-	if (!psi.applyCollisionObjects(ps.world.collision_objects)) {
-		ROS_ERROR("Failed to apply collision objects");
-	}
+    // Add collision objects to the planning scene
+    if (!psi.applyCollisionObjects(ps.world.collision_objects)) {
+        ROS_ERROR("Failed to apply collision objects");
+    }
 
-	return 0;
+    return 0;
 }
