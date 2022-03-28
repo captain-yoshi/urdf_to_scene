@@ -65,7 +65,6 @@ private:
                    std::map<std::string, std::string>& dummy_link_names);
     void parseCollisionGeometry(const urdf::LinkConstSharedPtr& link, const std::string& frame_id,
                                 const Eigen::Isometry3d& parent_to_collision_tf);
-    void urdfPoseToEigenIsometry(const urdf::Pose& urdf_pose, Eigen::Isometry3d& eigen_pose);
 
     void createCollisionObjectPrimitive(moveit_msgs::CollisionObject& collision_object, const std::string& object_id,
                                         const shape_msgs::SolidPrimitive& primitive, const Eigen::Isometry3d& frame,

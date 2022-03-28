@@ -73,6 +73,11 @@ bool parsePose(urdf::Pose& pose, tinyxml2::XMLElement* xml) {
     return true;
 }
 
+static inline Eigen::Isometry3d urdfPoseToIsometry3d(const urdf::Pose& pose) {
+    Eigen::Quaterniond q(pose.rotation.w, pose.rotation.x, pose.rotation.y, pose.rotation.z);
+    Eigen::Isometry3d iso(Eigen::Translation3d(pose.position.x, pose.position.y, pose.position.z) * q);
+    return iso;
+}
 }  // namespace
 
 bool SceneParser::loadURDF(ros::NodeHandle& nh, const std::string& param_name) {
@@ -262,17 +267,6 @@ void SceneParser::parseCollisionGeometry(const urdf::LinkConstSharedPtr& link, c
         ROS_ERROR("Collision geometry type not supported");
         scene_.world.collision_objects.pop_back();
     }
-}
-
-void SceneParser::urdfPoseToEigenIsometry(const urdf::Pose& urdf_pose, Eigen::Isometry3d& eigen_pose) {
-    eigen_pose.translate(Eigen::Vector3d(urdf_pose.position.x, urdf_pose.position.y, urdf_pose.position.z));
-    Eigen::Quaterniond q;
-    q.w() = urdf_pose.rotation.w;
-    q.x() = urdf_pose.rotation.x;
-    q.y() = urdf_pose.rotation.y;
-    q.z() = urdf_pose.rotation.z;
-
-    eigen_pose.linear() = q.matrix();
 }
 
 void SceneParser::createCollisionObjectPrimitive(moveit_msgs::CollisionObject& collision_object,
