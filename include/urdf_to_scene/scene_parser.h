@@ -33,7 +33,7 @@
  *********************************************************************/
 
 /* Author: Captain Yoshi
-   Desc:
+   Desc: Parser for converting a urdf into a MoveIt PlanningScene
 */
 
 #pragma once

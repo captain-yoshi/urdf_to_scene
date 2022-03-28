@@ -32,9 +32,7 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  *********************************************************************/
 
-/* Author: Captain Yoshi
-   Desc:
-*/
+/* Author: Captain Yoshi */
 
 #include <urdf_to_scene/scene_parser.h>
 

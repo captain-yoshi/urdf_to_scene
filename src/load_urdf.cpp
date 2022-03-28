@@ -33,7 +33,7 @@
  *********************************************************************/
 
 /* Author: Captain Yoshi
-   Desc:
+   Desc: Update a MoveGroup PlanningScene given a URDF
 */
 
 #include <ros/ros.h>
