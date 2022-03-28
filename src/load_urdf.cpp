@@ -74,14 +74,5 @@ int main(int argc, char** argv) {
 		ROS_ERROR("Failed to apply collision objects");
 	}
 
-	/*
-	// Debug
-	std::string file;
-	if (!nh.getParam("/scene_urdf", file))
-	   ROS_ERROR("Robot start states not found");
-
-	std::cout << file;
-	*/
-
 	return 0;
 }
