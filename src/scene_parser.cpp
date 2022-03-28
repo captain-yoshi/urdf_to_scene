@@ -129,18 +129,17 @@ void SceneParser::parseURDF() {
     // Parse root link
     auto root_link = model_.getRoot();
     if (root_link->collision) {
-        Eigen::Isometry3d link_to_collision_tf = Eigen::Isometry3d::Identity();
-        urdfPoseToEigenIsometry(root_link->collision->origin, link_to_collision_tf);
-        parseCollisionGeometry(root_link, root_link->name, link_to_collision_tf);
+        auto tf_joint_to_collision = urdfPoseToIsometry3d(root_link->collision->origin);
+        parseCollisionGeometry(root_link, root_link->name, tf_joint_to_collision);
     }
 
     // Parse child links
     std::vector<urdf::LinkSharedPtr> links = root_link->child_links;
     for (const auto& link : links) {
-        Eigen::Isometry3d offset = Eigen::Isometry3d::Identity();
         std::map<std::string, std::string> dummy_to_parent_map;
+        auto tf_parent_to_joint = urdfPoseToIsometry3d(link->parent_joint->parent_to_joint_origin_transform);
 
-        parseLink(link, offset, dummy_to_parent_map);
+        parseLink(link, tf_parent_to_joint, dummy_to_parent_map);
     }
 }
 
@@ -174,15 +173,28 @@ void SceneParser::parseFixedFrameTransforms() {
     }
 }
 
-void SceneParser::parseLink(const urdf::LinkConstSharedPtr& link, const Eigen::Isometry3d& offset,
+void SceneParser::parseLink(const urdf::LinkConstSharedPtr& link, const Eigen::Isometry3d& tf_parent_to_joint,
                             std::map<std::string, std::string>& dummy_link_names) {
-    Eigen::Isometry3d frame = Eigen::Isometry3d::Identity();
-    // Dummy links or subframes
-    // Keep tf offset wrt. a link with collision. The plannig scene dosen't accept dummy collision objects?
-    if (!link->collision) {
-        urdfPoseToEigenIsometry(link->parent_joint->parent_to_joint_origin_transform, frame);
-        frame = offset * frame;
+    // Stores the child links parent offset transform
+    // If collision tag tf = collision_to_joint, otherwise tf = parent_to_joint
+    Eigen::Isometry3d tf_childparent_offset = Eigen::Isometry3d::Identity();
 
+    // Collision object
+    if (link->collision) {
+        std::string frame_id = link->getParent()->name;
+        if (dummy_link_names.find(frame_id) != dummy_link_names.end())
+            frame_id = dummy_link_names.find(frame_id)->second;
+
+        auto tf_joint_to_collision = urdfPoseToIsometry3d(link->collision->origin);
+        auto tf_parent_to_collision = tf_parent_to_joint * tf_joint_to_collision;
+
+        parseCollisionGeometry(link, frame_id, tf_parent_to_collision);
+
+        // We want the children links to be wrt. the collision frame and not the joint frame
+        tf_childparent_offset = tf_joint_to_collision.inverse();
+    }
+    // Frame/Subframe
+    else {
         // Map dummy link to a link with collision
         auto parent_link = link->getParent();
         while (parent_link) {
@@ -194,32 +206,19 @@ void SceneParser::parseLink(const urdf::LinkConstSharedPtr& link, const Eigen::I
         }
         if (!parent_link)
             dummy_link_names.insert(std::make_pair(link->name, model_.getRoot()->name));
-    }
-    // Calculate parent to joint tf with offset from previous dummy link/s
-    else {
-        Eigen::Isometry3d parentjoint_to_link_tf = Eigen::Isometry3d::Identity();
-        Eigen::Isometry3d link_to_collision_tf = Eigen::Isometry3d::Identity();
-        Eigen::Isometry3d parentjoint_to_collision_tf = Eigen::Isometry3d::Identity();
 
-        urdfPoseToEigenIsometry(link->parent_joint->parent_to_joint_origin_transform, parentjoint_to_link_tf);
-        urdfPoseToEigenIsometry(link->collision->origin, link_to_collision_tf);
-
-        std::string frame_id = link->getParent()->name;
-        if (dummy_link_names.find(frame_id) != dummy_link_names.end()) {
-            frame_id = dummy_link_names.find(frame_id)->second;
-        }
-        // The collision object is added wrt. the frame_id
-        parentjoint_to_collision_tf = offset * parentjoint_to_link_tf * link_to_collision_tf;
-        parseCollisionGeometry(link, frame_id, parentjoint_to_collision_tf);
-
-        // We want the children links to be wrt. the link frame as opposed to the collsion frame
-        frame = link_to_collision_tf.inverse();
+        // Store tf because this is just a urdf frame placeholder
+        tf_childparent_offset = tf_parent_to_joint;
     }
 
     // Parse children links
     std::vector<urdf::LinkSharedPtr> child_links = link->child_links;
     for (const auto& child_link : child_links) {
-        parseLink(child_link, frame, dummy_link_names);
+        // Compute child link parent tf and apply offset to it
+        auto tf_childparent_to_joint = urdfPoseToIsometry3d(child_link->parent_joint->parent_to_joint_origin_transform);
+        tf_childparent_to_joint = tf_childparent_offset * tf_childparent_to_joint;
+
+        parseLink(child_link, tf_childparent_to_joint, dummy_link_names);
     }
 }
 
