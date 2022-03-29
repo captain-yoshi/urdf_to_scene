@@ -7,7 +7,18 @@
   <arg     if="$(arg debug)" name="launch_prefix" value="gdb --args" />
 
   <!-- Load xacro robot -->
-  <param name="scene_urdf" textfile="$(find moveit_resources_fanuc_description)/urdf/fanuc.urdf"/>
+  <param name="scene_urdf" textfile="$(find moveit_resources_pr2_description)/urdf/robot.xml"/>
+
+  <!-- Add static tf into the planning scene 'fixed_frame_transforms'.
+
+       OPTIONAL
+       Instead of using the 'static_transform_publisher', you can add these lines into the urdf:
+
+       <planning_fft name="base_footprint"
+                     parent="world"
+                     xyz="0.0 0.8 -0.1"/>
+  -->
+  <node pkg="tf2_ros" type="static_transform_publisher" name="fixed_frame_transform_broadcaster" args="0 0.8 -0.1 0 0 0 world base_footprint" />
 
   <!-- Launch node -->
   <node name="load_urdf" pkg="urdf_to_scene" type="load_urdf" output="screen" required="true" launch-prefix="$(arg launch_prefix)"/>

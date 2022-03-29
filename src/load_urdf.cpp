@@ -37,10 +37,12 @@
 */
 
 #include <ros/ros.h>
-
+#include <tf2_ros/transform_listener.h>
 #include <moveit/planning_scene_interface/planning_scene_interface.h>
 
 #include <urdf_to_scene/scene_parser.h>
+
+void waitForStaticTransform(const SceneParser& parser);
 
 int main(int argc, char** argv) {
     ros::init(argc, argv, "urdf_to_scene");
@@ -67,12 +69,35 @@ int main(int argc, char** argv) {
     parser.loadURDF(nh, "/scene_urdf");
     parser.parseURDF();
 
-    const auto& ps = parser.getPlanningScene();
+    // Get conveted planning scene and mark as diff
+    auto scene = parser.getPlanningScene();
+    scene.is_diff = true;
 
-    // Add collision objects to the planning scene
-    if (!psi.applyCollisionObjects(ps.world.collision_objects)) {
-        ROS_ERROR("Failed to apply collision objects");
-    }
+    // Only needed for the 'load_robot.launch' example
+    // Gives time to the move_group PlanningSceneMonitor to find the transform
+    if (scene.fixed_frame_transforms.empty())
+        waitForStaticTransform(parser);
+
+    // Update the planning scene
+    if (!psi.applyPlanningScene(scene))
+        ROS_ERROR("Failed to apply the planning scene");
+
+    // Update the collision objects
+    // if (!psi.applyCollisionObjects(scene.world.collision_objects))
+    //     ROS_ERROR("Failed to apply collision objects");
 
     return 0;
+}
+
+void waitForStaticTransform(const SceneParser& parser) {
+    const auto& model = parser.getURDFModel();
+    auto root_link = model.getRoot()->name;
+
+    auto tf_buffer = std::make_shared<tf2_ros::Buffer>();
+    auto tf_listener = std::make_shared<tf2_ros::TransformListener>(*tf_buffer);
+    try {
+        tf_buffer->lookupTransform("world", root_link, ros::Time(0), ros::Duration{ 1.0 });
+    } catch (tf2::TransformException& ex) {
+        // Do nothing
+    }
 }
