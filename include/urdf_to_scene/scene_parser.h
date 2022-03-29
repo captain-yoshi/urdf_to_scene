@@ -55,6 +55,7 @@ public:
 
     /// retrieve data
     const moveit_msgs::PlanningScene& getPlanningScene() const;
+    const urdf::Model& getURDFModel() const;
     const std::map<std::string, std::string>& getMeshResourceMap() const;
 
     void printTF(const std::string& tf_name, const Eigen::Isometry3d& tf);

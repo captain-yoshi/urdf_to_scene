@@ -113,6 +113,10 @@ const moveit_msgs::PlanningScene& SceneParser::getPlanningScene() const {
     return scene_;
 }
 
+const urdf::Model& SceneParser::getURDFModel() const {
+    return model_;
+}
+
 const std::map<std::string, std::string>& SceneParser::getMeshResourceMap() const {
     return mesh_resource_map_;
 }
