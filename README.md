@@ -1,28 +1,54 @@
 # URDF to PlanningScene
+**This project is under development. The API is unstable and incomplete.**
 
-Create and parse collision objects from a URDF to a MoveIt CollisionObject message. 
+The URDF to PlanningScene is a toolbox for creating and converting a URDF into a MoveIt *PlanningScene* message. It comes with a Xacro library which makes it easy to add collision objects into your world. A collection of complex primitive objects is also available such as shelves and crates. You can even convert your robot URDF into a collision object directly!
 
-**This package is under development by an intern! The API is extremly unstable and incomplete.**
+## Example
+Planning scene xacro representation and RViz output.
 
-Load collision objects from a URDF to a planning scene:
-```shell
-# Open Panda demo in another terminal
+<img align="right" width="400"   src=".doc/shelf.png">
+
+
+
+``` xml
+<robot name="planning_scene">
+
+    <link name="world"/>
+
+    <xacro:shelf
+        name="bookshelf"
+        frame_id="world"
+        xyz="0.8 0 0"/>
+
+    <xacro:collision_box 
+        name="box"
+        frame_id="bookshelf_board1/top"
+        xyz="0 0 ${0.05/2}"
+        dimensions="0.05 0.05 0.05"/>
+    
+</robot>
+```
+
+## Demo
+
+Load a planning scene:
+
+``` shell
+# Run the panda demo in another terminal
 # roslaunch moveit_resources_panda_moveit_config demo.launch
 
-roslaunch urdf_to_scene load_urdf_scene.launch
+$ roslaunch urdf_to_scene load_scene.launch
 ```
-<p align="center">
-<img src="doc/open_shelf.png" alt="drawing" width="400"/>
-</p>
 
-Create diagram of URDF:
-```shell
-# Create urdf
-rosrun xacro xacro scene.urdf.xacro > scene.urdf
+Load the PR2 robot alongside the panda:
 
-# Create graph
-urdf_to_graphiz scene.urdf
+``` shell
+# Run the panda demo in another terminal
+# roslaunch moveit_resources_panda_moveit_config demo.launch
+
+$ roslaunch urdf_to_scene load_robot.launch
 ```
+
 <p align="center">
-<img src="doc/shelf_urdf.png" alt="drawing"/>
+  <img width="600" src=".doc/pr2_import.png">
 </p>

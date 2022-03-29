@@ -14,7 +14,7 @@
  *     copyright notice, this list of conditions and the following
  *     disclaimer in the documentation and/or other materials provided
  *     with the distribution.
- *   * Neither the name of Bielefeld University nor the names of its
+ *   * Neither the name of the copyright holder nor the names of its
  *     contributors may be used to endorse or promote products derived
  *     from this software without specific prior written permission.
  *
@@ -33,55 +33,71 @@
  *********************************************************************/
 
 /* Author: Captain Yoshi
-   Desc:
+   Desc: Update a MoveGroup PlanningScene given a URDF
 */
 
 #include <ros/ros.h>
-
+#include <tf2_ros/transform_listener.h>
 #include <moveit/planning_scene_interface/planning_scene_interface.h>
 
 #include <urdf_to_scene/scene_parser.h>
 
+void waitForStaticTransform(const SceneParser& parser);
+
 int main(int argc, char** argv) {
-	ros::init(argc, argv, "urdf_to_scene");
-	ros::AsyncSpinner spinner(1);
-	spinner.start();
+    ros::init(argc, argv, "urdf_to_scene");
+    ros::AsyncSpinner spinner(1);
+    spinner.start();
 
-	ros::NodeHandle nh("~");
+    ros::NodeHandle nh("~");
 
-	// Remove all scene objects
-	moveit::planning_interface::PlanningSceneInterface psi;
-	{
-		moveit_msgs::PlanningScene rm;
-		rm.is_diff = true;
-		rm.robot_state.is_diff = true;
-		rm.robot_state.attached_collision_objects.resize(1);
-		rm.robot_state.attached_collision_objects[0].object.operation = moveit_msgs::CollisionObject::REMOVE;
-		rm.world.collision_objects.resize(1);
-		rm.world.collision_objects[0].operation = moveit_msgs::CollisionObject::REMOVE;
-		psi.applyPlanningScene(rm);
-	}
+    // Remove all scene objects
+    moveit::planning_interface::PlanningSceneInterface psi;
+    {
+        moveit_msgs::PlanningScene rm;
+        rm.is_diff = true;
+        rm.robot_state.is_diff = true;
+        rm.robot_state.attached_collision_objects.resize(1);
+        rm.robot_state.attached_collision_objects[0].object.operation = moveit_msgs::CollisionObject::REMOVE;
+        rm.world.collision_objects.resize(1);
+        rm.world.collision_objects[0].operation = moveit_msgs::CollisionObject::REMOVE;
+        psi.applyPlanningScene(rm);
+    }
 
-	// Parse URDF into a planning scene
-	SceneParser parser;
-	parser.loadURDF(nh, "/scene_urdf");
-	parser.parseURDF();
+    // Parse URDF into a planning scene
+    SceneParser parser;
+    parser.loadURDF(nh, "/scene_urdf");
+    parser.parseURDF();
 
-	const auto& ps = parser.getPlanningScene();
+    // Get conveted planning scene and mark as diff
+    auto scene = parser.getPlanningScene();
+    scene.is_diff = true;
 
-	// Add collision objects to the planning scene
-	if (!psi.applyCollisionObjects(ps.world.collision_objects)) {
-		ROS_ERROR("Failed to apply collision objects");
-	}
+    // Only needed for the 'load_robot.launch' example
+    // Gives time to the move_group PlanningSceneMonitor to find the transform
+    if (scene.fixed_frame_transforms.empty())
+        waitForStaticTransform(parser);
 
-	/*
-	// Debug
-	std::string file;
-	if (!nh.getParam("/scene_urdf", file))
-	   ROS_ERROR("Robot start states not found");
+    // Update the planning scene
+    if (!psi.applyPlanningScene(scene))
+        ROS_ERROR("Failed to apply the planning scene");
 
-	std::cout << file;
-	*/
+    // Update the collision objects
+    // if (!psi.applyCollisionObjects(scene.world.collision_objects))
+    //     ROS_ERROR("Failed to apply collision objects");
 
-	return 0;
+    return 0;
+}
+
+void waitForStaticTransform(const SceneParser& parser) {
+    const auto& model = parser.getURDFModel();
+    auto root_link = model.getRoot()->name;
+
+    auto tf_buffer = std::make_shared<tf2_ros::Buffer>();
+    auto tf_listener = std::make_shared<tf2_ros::TransformListener>(*tf_buffer);
+    try {
+        tf_buffer->lookupTransform("world", root_link, ros::Time(0), ros::Duration{ 1.0 });
+    } catch (tf2::TransformException& ex) {
+        // Do nothing
+    }
 }

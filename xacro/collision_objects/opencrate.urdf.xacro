@@ -1,0 +1,55 @@
+<?xml version="1.0" ?>
+<robot name="opencrate" xmlns:xacro="http://www.ros.org/wiki/xacro">
+    <xacro:include filename="$(find urdf_to_scene)/xacro/planning_scene.xacro" />
+
+    <!-- Generic open crate macro -->
+    <xacro:macro name="opencrate" params="name
+                                          frame_id
+                                          xyz:='0 0 0'
+                                          rpy:='0 0 0'
+                                          dimensions:='0.3 0.3 0.2'
+                                          thickness:=0.01
+                                          dl:=_">
+    <!-- Property -->
+    <xacro:property name="root"  value="${name}" />
+    <xacro:property name="dim_x" value="${dimensions.split()[0]}" />
+    <xacro:property name="dim_y" value="${dimensions.split()[1]}" />
+    <xacro:property name="dim_z" value="${dimensions.split()[2]}" />
+
+    <!-- Base link -->
+    <xacro:frame name="${root}"
+                frame_id="${frame_id}"
+                xyz="${xyz}" rpy="${rpy}" />
+
+    <!-- Individual boards -->
+    <xacro:collision_box name="${root}${dl}bottom"
+                         frame_id="${root}"
+                         dimensions="${dim_x} ${dim_y} ${thickness}"
+                         xyz="0 0 ${thickness/2}" />
+
+    <!-- <xacro:collision_box name="${root}${dl}top" -->
+    <!--                 frame_id="${root}${dl}bottom" -->
+    <!--                 dimensions="${dim_x} ${dim_y} ${thickness}" -->
+    <!--                 xyz="0 0 ${dim_z - thickness}"/> -->
+
+    <xacro:collision_box name="${root}${dl}back"
+                         frame_id="${root}"
+                         dimensions="${thickness} ${dim_y} ${dim_z}"
+                         xyz="${-dim_x/2 + thickness/2} 0 ${dim_z/2}"/>
+
+    <xacro:collision_box name="${root}${dl}front"
+                         frame_id="${root}${dl}back/bottom"
+                         dimensions="${thickness} ${dim_y} ${dim_z}"
+                         xyz="${dim_x - thickness} 0 ${dim_z/2}"/>
+
+    <xacro:collision_box name="${root}${dl}left"
+                         frame_id="${root}"
+                         dimensions="${dim_x} ${thickness} ${dim_z}"
+                         xyz="0 ${-dim_y/2 + thickness/2} ${dim_z/2}"/>
+
+    <xacro:collision_box name="${root}${dl}right"
+                         frame_id="${root}${dl}left/bottom"
+                         dimensions="${dim_x} ${thickness} ${dim_z}"
+                         xyz="0 ${dim_y - thickness} ${dim_z/2}"/>
+    </xacro:macro>
+</robot>
