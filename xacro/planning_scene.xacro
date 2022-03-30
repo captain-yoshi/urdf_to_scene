@@ -98,7 +98,7 @@
     </xacro:macro>
 
     <!-- Mesh collision object -->
-    <xacro:macro name="collision_mesh" params="name frame_id resource xyz:='0 0 0' rpy:='0 0 0' scale:='1.0 1.0 1.0'">
+    <xacro:macro name="collision_mesh" params="name frame_id resource metadata:='{}' xyz:='0 0 0' rpy:='0 0 0' scale:='1.0 1.0 1.0'">
         <link name="${name}">
             <collision>
                 <geometry>
@@ -110,6 +110,19 @@
         <xacro:_tf name="${name}" parent="${frame_id}">
             <origin xyz="${xyz}" rpy="${rpy}"/>
         </xacro:_tf>
+
+        <!-- Add bounding box subframes from metadata -->
+        <xacro:if value="${'bb' in metadata}">
+            <xacro:_bb_subframes name="${name}"
+                                bbx="${float(metadata['bb'][0])/2}"
+                                bby="${float(metadata['bb'][1])/2}"
+                                bbz="${float(metadata['bb'][2])/2}"/>
+        </xacro:if>
+
+        <!-- Add subframes from metadata -->
+        <xacro:if value="${'subframes' in metadata}">
+            <xacro:loop name="${name}" keys="${list(metadata['subframes'].keys())}" values="${list(metadata['subframes'].values())}"/>
+        </xacro:if>
     </xacro:macro>
 
     <!-- Default bounding box information as subframes, used internally -->
@@ -139,4 +152,35 @@
                         frame_id="${name}"
                         xyz="0 ${float(bby)} 0" />
     </xacro:macro>
+
+    <!-- Loop for adding custom subframes metadata -->
+    <xacro:macro name="loop" params="name:=^ keys:=^ values:=^">
+        <xacro:if value="${keys}">
+            <!-- pop first item from list -->
+            <xacro:property name="key" value="${keys.pop(0)}"/>
+            <xacro:property name="val" value="${values.pop(0)}"/>
+
+            <!-- extract pose -->
+            <xacro:property name="xyz" value="0 0 0" />
+            <xacro:property name="rpy" value="0 0 0" />
+
+            <xacro:if value="${'xyz' in val}">
+                 <xacro:property name="xyz" value="${val['xyz'][0]} ${val['xyz'][1]} ${val['xyz'][2]}"/>
+            </xacro:if>
+            <xacro:if value="${'rpy' in val}">
+                 <xacro:property name="rpy" value="${val['rpy'][0]} ${val['rpy'][1]} ${val['rpy'][2]}"/>
+            </xacro:if>
+
+            <xacro:subframe name="${name}"
+                            subframe_name="${key}"
+                            frame_id="${name}"
+                            xyz="${xyz}"
+                            rpy="${rpy}"/>
+
+            <!-- recursively call myself -->
+            <xacro:loop/>
+        </xacro:if>
+    </xacro:macro>
+
+
 </robot>
