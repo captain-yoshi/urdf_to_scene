@@ -18,8 +18,8 @@
 
     <!-- Base link -->
     <xacro:frame name="${root}"
-                frame_id="${frame_id}"
-                xyz="${xyz}" rpy="${rpy}" />
+                 frame_id="${frame_id}"
+                 xyz="${xyz}" rpy="${rpy}" />
 
     <!-- Individual boards -->
     <xacro:collision_box name="${root}${dl}bottom"

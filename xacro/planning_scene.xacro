@@ -52,9 +52,9 @@
 
         <!-- Add default subframes (front, back, left, right, top, down) -->
         <xacro:_bb_subframes name="${name}"
-                            bbx="${float(dimensions.split()[0])/2}"
-                            bby="${float(dimensions.split()[1])/2}"
-                            bbz="${float(dimensions.split()[2])/2}"/>
+                             bbx="${float(dimensions.split()[0])/2}"
+                             bby="${float(dimensions.split()[1])/2}"
+                             bbz="${float(dimensions.split()[2])/2}"/>
     </xacro:macro>
 
     <!-- Cylinder collision object -->
@@ -72,9 +72,9 @@
         </xacro:_tf>
 
         <xacro:_bb_subframes name="${name}"
-                            bbx="${float(dimensions.split()[0])/2}"
-                            bby="${float(dimensions.split()[1])/2}"
-                            bbz="${float(dimensions.split()[2])/2}"/>
+                             bbx="${float(dimensions.split()[0])/2}"
+                             bby="${float(dimensions.split()[1])/2}"
+                             bbz="${float(dimensions.split()[2])/2}"/>
     </xacro:macro>
 
     <!-- Sphere collision object -->
@@ -92,9 +92,9 @@
         </xacro:_tf>
 
         <xacro:_bb_subframes name="${name}"
-                            bbx="${float(dimensions.split()[0])/2}"
-                            bby="${float(dimensions.split()[1])/2}"
-                            bbz="${float(dimensions.split()[2])/2}"/>
+                             bbx="${float(dimensions.split()[0])/2}"
+                             bby="${float(dimensions.split()[1])/2}"
+                             bbz="${float(dimensions.split()[2])/2}"/>
     </xacro:macro>
 
     <!-- Mesh collision object -->
