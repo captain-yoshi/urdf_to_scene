@@ -34,7 +34,7 @@
     </xacro:macro>
 
     <!-- Box collision object -->
-    <xacro:macro name="collision_box" params="name frame_id dimensions xyz:='0 0 0' rpy:='0 0 0' scale:='1.0 1.0 1.0' default_subframes:=True">
+    <xacro:macro name="collision_box" params="name frame_id dimensions xyz:='0 0 0' rpy:='0 0 0' default_subframes:=True">
         <!-- Collision object stored as a urdf link -->
         <link name="${name}">
             <!-- Box shape -->
@@ -58,7 +58,7 @@
     </xacro:macro>
 
     <!-- Cylinder collision object -->
-    <xacro:macro name="collision_cylinder" params="name frame_id radius length xyz:='0 0 0' rpy:='0 0 0' scale:='1.0 1.0 1.0'">
+    <xacro:macro name="collision_cylinder" params="name frame_id radius length xyz:='0 0 0' rpy:='0 0 0'">
         <link name="${name}">
             <collision>
                 <geometry>
@@ -78,7 +78,7 @@
     </xacro:macro>
 
     <!-- Sphere collision object -->
-    <xacro:macro name="collision_sphere" params="name frame_id radius xyz:='0 0 0' rpy:='0 0 0' scale:='1.0 1.0 1.0'">
+    <xacro:macro name="collision_sphere" params="name frame_id radius xyz:='0 0 0' rpy:='0 0 0'">
         <link name="${name}">
             <collision>
                 <geometry>
