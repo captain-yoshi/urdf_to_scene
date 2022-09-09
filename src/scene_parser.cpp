@@ -306,9 +306,10 @@ void SceneParser::createCollisionObjectMesh(moveit_msgs::CollisionObject& collis
     // Store mesh resource internally
     mesh_resource_map_.insert({ object_id, mesh_path });
 
-    shapes::Shape* shape = shapes::createMeshFromResource(mesh_path, scaling);
     shapes::ShapeMsg shape_msg;
-    shapes::constructMsgFromShape(shape, shape_msg);
+    std::unique_ptr<const shapes::Shape> shape =
+        std::unique_ptr<const shapes::Shape>(shapes::createMeshFromResource(mesh_path, scaling));
+    shapes::constructMsgFromShape(shape.get(), shape_msg);
 
     collision_object.id = object_id;
     collision_object.header = pose_stamped.header;
