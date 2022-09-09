@@ -9,6 +9,7 @@
                                           rpy:='0 0 0'
                                           dimensions:='0.3 0.3 0.2'
                                           thickness:=0.01
+                                          mesh_resource:=''
                                           dl:=_">
     <!-- Property -->
     <xacro:property name="root"  value="${name}" />
@@ -25,7 +26,8 @@
     <xacro:collision_box name="${root}${dl}bottom"
                          frame_id="${root}"
                          dimensions="${dim_x} ${dim_y} ${thickness}"
-                         xyz="0 0 ${thickness/2}" />
+                         xyz="0 0 ${thickness/2}"
+                         mesh_resource="${mesh_resource}" />
 
     <!-- <xacro:collision_box name="${root}${dl}top" -->
     <!--                 frame_id="${root}${dl}bottom" -->
@@ -35,21 +37,25 @@
     <xacro:collision_box name="${root}${dl}back"
                          frame_id="${root}"
                          dimensions="${thickness} ${dim_y} ${dim_z}"
-                         xyz="${-dim_x/2 + thickness/2} 0 ${dim_z/2}"/>
+                         xyz="${-dim_x/2 + thickness/2} 0 ${dim_z/2}"
+                         mesh_resource="${mesh_resource}" />
 
     <xacro:collision_box name="${root}${dl}front"
                          frame_id="${root}${dl}back/bottom"
                          dimensions="${thickness} ${dim_y} ${dim_z}"
-                         xyz="${dim_x - thickness} 0 ${dim_z/2}"/>
+                         xyz="${dim_x - thickness} 0 ${dim_z/2}"
+                         mesh_resource="${mesh_resource}" />
 
     <xacro:collision_box name="${root}${dl}left"
                          frame_id="${root}"
                          dimensions="${dim_x} ${thickness} ${dim_z}"
-                         xyz="0 ${-dim_y/2 + thickness/2} ${dim_z/2}"/>
+                         xyz="0 ${-dim_y/2 + thickness/2} ${dim_z/2}"
+                         mesh_resource="${mesh_resource}" />
 
     <xacro:collision_box name="${root}${dl}right"
                          frame_id="${root}${dl}left/bottom"
                          dimensions="${dim_x} ${thickness} ${dim_z}"
-                         xyz="0 ${dim_y - thickness} ${dim_z/2}"/>
+                         xyz="0 ${dim_y - thickness} ${dim_z/2}"
+                         mesh_resource="${mesh_resource}" />
     </xacro:macro>
 </robot>

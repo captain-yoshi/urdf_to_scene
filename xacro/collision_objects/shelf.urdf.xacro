@@ -13,6 +13,7 @@
                                       h_board_thickness:=0.02
                                       v_board_thickness:=0.02
                                       back_board:=false
+                                      mesh_resource:=''
                                       dl:='_'">
 
     <!-- Properties -->
@@ -43,12 +44,14 @@
     <xacro:collision_box name="${root}${dl}vboard1"
                          frame_id="${root}"
                          dimensions="${vboard_dimensions}"
-                         xyz="0 ${-(dim_y/2 - v_board_thickness/2)} ${dim_z/2}"/>
+                         xyz="0 ${-(dim_y/2 - v_board_thickness/2)} ${dim_z/2}"
+                         mesh_resource="${mesh_resource}" />
 
     <xacro:collision_box name="${root}${dl}vboard${v_boards + 2}"
                          frame_id="${root}"
                          dimensions="${vboard_dimensions}"
-                         xyz="0 ${dim_y/2 - v_board_thickness/2} ${dim_z/2}"/>
+                         xyz="0 ${dim_y/2 - v_board_thickness/2} ${dim_z/2}"
+                         mesh_resource="${mesh_resource}" />
 
     <!-- Vertical inside boards -->
     <xacro:macro name="loopvboard" params="current:=0 until:=^">
@@ -56,7 +59,8 @@
             <xacro:collision_box name="${root}${dl}vboard${current+2}"
                                  frame_id="${root}${dl}vboard1"
                                  dimensions="${vboard_dimensions}"
-                                 xyz="0 ${(current+1)*vboard_gap- v_board_thickness/2} 0"/>
+                                 xyz="0 ${(current+1)*vboard_gap- v_board_thickness/2} 0"
+                                 mesh_resource="${mesh_resource}" />
             <xacro:loopvboard current="${current+1}"/>
         </xacro:if>
     </xacro:macro>
@@ -69,7 +73,8 @@
             <xacro:collision_box name="${root}${dl}board${index*h_boards+current+1}"
                                  frame_id="${root}${dl}vboard${index+1}"
                                  dimensions="${hboard_dimensions}"
-                                 xyz="0 ${(vboard_gap - v_board_thickness/2)/2} ${(current + 1)*hboard_gap - h_board_thickness/2 - dim_z/2}"/>
+                                 xyz="0 ${(vboard_gap - v_board_thickness/2)/2} ${(current + 1)*hboard_gap - h_board_thickness/2 - dim_z/2}"
+                                 mesh_resource="${mesh_resource}" />
             <xacro:loophboard current="${current+1}"/>
         </xacro:if>
     </xacro:macro>
@@ -88,7 +93,8 @@
         <xacro:collision_box name="${root}${dl}backboard"
                              frame_id="${root}"
                              dimensions="${v_board_thickness} ${dim_y} ${dim_z}"
-                             xyz="${-dim_x/2} 0 0"/>
+                             xyz="${-dim_x/2} 0 0"
+                             mesh_resource="${mesh_resource}" />
     </xacro:if>
 
     </xacro:macro>
