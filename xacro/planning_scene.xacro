@@ -34,27 +34,44 @@
     </xacro:macro>
 
     <!-- Box collision object -->
-    <xacro:macro name="collision_box" params="name frame_id dimensions xyz:='0 0 0' rpy:='0 0 0' default_subframes:=True">
-        <!-- Collision object stored as a urdf link -->
-        <link name="${name}">
-            <!-- Box shape -->
-            <collision>
-                <geometry>
-                    <box size="${dimensions}" />
-                </geometry>
-            </collision>
-        </link>
+    <xacro:macro name="collision_box" params="name frame_id dimensions xyz:='0 0 0' rpy:='0 0 0' mesh_resource:='' default_subframes:=True">
 
-        <!-- Collision object frame -->
-        <xacro:_tf name="${name}" parent="${frame_id}">
-            <origin xyz="${xyz}" rpy="${rpy}"/>
-        </xacro:_tf>
+        <!-- convert to a `shape_msgs/SolidPrimitive` -->
+        <xacro:if value="${len(mesh_resource) == 0}">
+            <!-- Collision object stored as a urdf link -->
+            <link name="${name}">
+                <!-- Box shape -->
+                <collision>
+                    <geometry>
+                        <box size="${dimensions}" />
+                    </geometry>
+                </collision>
+            </link>
+
+            <!-- Collision object frame -->
+            <xacro:_tf name="${name}" parent="${frame_id}">
+                <origin xyz="${xyz}" rpy="${rpy}"/>
+            </xacro:_tf>
+        </xacro:if>
+
+        <!-- convert to a `shape_msgs/Mesh.msg` -->
+        <xacro:unless value="${len(mesh_resource) == 0}">
+            <!-- apply dimensions on scale, must use a unit mesh -->
+            <xacro:collision_mesh name="${name}"
+                                  frame_id="${frame_id}"
+                                  xyz="${xyz}"
+                                  rpy="${rpy}"
+                                  resource="${mesh_resource}"
+                                  scale="${dimensions}"/>
+        </xacro:unless>
 
         <!-- Add default subframes (front, back, left, right, top, down) -->
+        <!-- Warning :if usin a mesh resource, the origin MUST be located in the center -->
         <xacro:_bb_subframes name="${name}"
                              bbx="${float(dimensions.split()[0])/2}"
                              bby="${float(dimensions.split()[1])/2}"
                              bbz="${float(dimensions.split()[2])/2}"/>
+
     </xacro:macro>
 
     <!-- Cylinder collision object -->
